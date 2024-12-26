@@ -1,15 +1,9 @@
-using MindVault.Application.Common.Interfaces;
-
 namespace MindVault.Application.DTOs.Users.CreateUser;
 
 public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
 {
-    private readonly IIdentityService _identityService;
-    
-    public CreateUserDtoValidator(IIdentityService identityService)
+    public CreateUserDtoValidator()
     {
-        _identityService = identityService;
-
         RuleFor(x => x.UserName)
             .NotEmpty().WithMessage("Informe o nome de usuário")
             .MaximumLength(100).WithMessage("O nome de usuário deve possuir no máximo 100 caracteres");
