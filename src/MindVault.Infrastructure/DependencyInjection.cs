@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MindVault.Application.Common.Interfaces;
 using MindVault.Infrastructure.Data;
 using MindVault.Infrastructure.Identity;
 
@@ -30,6 +31,8 @@ public static class DependencyInjection
                 options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<MindVaultDbContext>();
+
+        builder.Services.AddScoped<IIdentityService, IdentityService>();
 
     }
 }
