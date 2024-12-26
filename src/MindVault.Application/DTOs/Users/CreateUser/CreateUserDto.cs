@@ -1,4 +1,4 @@
-namespace MindVault.Application.DTOs.Auth.CreateUser;
+namespace MindVault.Application.DTOs.Users.CreateUser;
 
 public class CreateUserDto
 {

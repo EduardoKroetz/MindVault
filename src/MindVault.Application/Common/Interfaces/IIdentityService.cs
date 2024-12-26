@@ -1,4 +1,4 @@
-using MindVault.Application.DTOs.Auth.CreateUser;
+using MindVault.Application.DTOs.Users.CreateUser;
 using MindVault.Application.Common.Models;
 
 namespace MindVault.Application.Common.Interfaces;

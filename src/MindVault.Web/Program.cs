@@ -1,10 +1,12 @@
+using MindVault.Extensions.Application;
 using MindVault.Infrastructure;
+using MindVault.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.AddServices();
 builder.AddInfrastructure();
+builder.AddApplicationServices();
 
 var app = builder.Build();
 
@@ -15,5 +17,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
