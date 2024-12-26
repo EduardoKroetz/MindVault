@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MindVault.Core\MindVault.Core.csproj" />
+    </ItemGroup>
+
 </Project>

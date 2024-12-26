@@ -1,7 +1,10 @@
+using MindVault.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.AddInfrastructure();
 
 var app = builder.Build();
 

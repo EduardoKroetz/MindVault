@@ -27,6 +27,15 @@ public class NoteMapping : IEntityTypeConfiguration<Note>
         
         builder.HasMany(x => x.Categories)
             .WithMany(x => x.Notes)
-            .UsingEntity("NotesCategories");
+            .UsingEntity<Dictionary<string, string>>(
+                "NoteCategories",
+                j => j.HasOne<Category>()
+                    .WithMany()
+                    .HasForeignKey("CategoryId")
+                    .OnDelete(DeleteBehavior.Restrict),
+                j => j.HasOne<Note>()
+                    .WithMany()
+                    .HasForeignKey("NoteId")
+                    .OnDelete(DeleteBehavior.Restrict));
     }
 }
