@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using MindVault.Application.Common.Interfaces;
 using MindVault.Application.Common.Models;
-using MindVault.Application.DTOs.Auth.CreateUser;
+using MindVault.Application.DTOs.Users.CreateUser;
 
 namespace MindVault.Infrastructure.Identity;
 

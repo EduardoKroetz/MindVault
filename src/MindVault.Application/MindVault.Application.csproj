@@ -7,7 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MindVault.Core\MindVault.Core.csproj" />
+        <ProjectReference Include="..\MindVault.Core\MindVault.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     </ItemGroup>
 
 </Project>
