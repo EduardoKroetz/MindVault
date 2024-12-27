@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MindVault.Application.Common.Interfaces;
+using MindVault.Core.Repositories;
 using MindVault.Infrastructure.Data;
 using MindVault.Infrastructure.Identity;
+using MindVault.Infrastructure.Repositories;
 
 namespace MindVault.Infrastructure;
 
@@ -33,6 +35,10 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<MindVaultDbContext>();
 
         builder.Services.AddScoped<IIdentityService, IdentityService>();
+
+        
+        //Config Repositories
+        builder.Services.AddScoped<INoteRepository, NoteRepository>();
 
     }
 }
