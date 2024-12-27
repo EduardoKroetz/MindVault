@@ -28,6 +28,23 @@ public class NoteService : INoteService
         return note.Id;
     }
     
+    public async Task<Result> UpdateNoteAsync(string title, string content, int noteId, string userId)
+    {
+        var note = await _noteRepository.GetByIdAsync(noteId);
+        if (note is null)
+            return Result.Failure(["Nota não encontrada"]);
+
+        if (note.UserId != userId)
+            return Result.Failure(["Você não tem permissão para atualizar essa Nota"], 403);
+
+        note.Title = title;
+        note.Content = content;
+        
+        await _noteRepository.UpdateAsync(note);    
+        
+        return Result.Success(noteId);
+    }
+    
     public async Task<Result> DeleteNoteAsync(int noteId, string userId)
     {
         var note = await _noteRepository.GetByIdAsync(noteId);

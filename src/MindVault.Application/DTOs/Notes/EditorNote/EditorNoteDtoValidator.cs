@@ -1,8 +1,10 @@
-namespace MindVault.Extensions.Application.DTOs.Notes.CreateNote;
+using MindVault.Application.DTOs.Notes.CreateNote;
 
-public class CreateNoteDtoValidator : AbstractValidator<CreateNoteDto>
+namespace MindVault.Application.DTOs.Notes.CreateNote;
+
+public class EditorNoteDtoValidator : AbstractValidator<EditorNoteDto>
 {
-    public CreateNoteDtoValidator()
+    public EditorNoteDtoValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Informe o título")

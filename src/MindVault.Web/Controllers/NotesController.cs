@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MindVault.Application.DTOs.Notes.CreateNote;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Services;
-using MindVault.Extensions.Application.DTOs.Notes.CreateNote;
 using MindVault.Web.Extensions;
 
 namespace MindVault.Web.Controllers;
@@ -19,13 +19,25 @@ public class NotesController : ControllerBase
     }
 
     [HttpPost, Authorize]
-    public async Task<IActionResult> CreateNoteAsync(CreateNoteDto dto)
+    public async Task<IActionResult> CreateNoteAsync(EditorNoteDto dto)
     {
         var userId = User.GetUserId();
 
         var noteId = await _noteService.CreateNoteAsync(dto.Title, dto.Content, userId);
         
         return Ok(Result.Success(new { Id = noteId }));
+    }
+    
+    [HttpPut("{noteId:int}"), Authorize]
+    public async Task<IActionResult> UpdateNoteAsync(EditorNoteDto dto, int noteId)
+    {
+        var userId = User.GetUserId();
+
+        var result = await _noteService.UpdateNoteAsync(dto.Title, dto.Content, noteId, userId);
+        if (result.Succeeded is false)
+            return StatusCode(result.Status, result);
+        
+        return NoContent();
     }
     
     [HttpDelete("{noteId:int}"), Authorize]
@@ -35,7 +47,7 @@ public class NotesController : ControllerBase
 
         var result = await _noteService.DeleteNoteAsync(noteId, userId);
         if (result.Succeeded is false)
-            return BadRequest(result);
+            return StatusCode(result.Status, result);
         
         return NoContent();
     }
