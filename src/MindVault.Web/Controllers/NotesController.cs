@@ -11,6 +11,7 @@ namespace MindVault.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class NotesController : ControllerBase
 {
     private readonly INoteService _noteService;
@@ -22,7 +23,7 @@ public class NotesController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpPost, Authorize]
+    [HttpPost]
     public async Task<IActionResult> CreateNoteAsync(EditorNoteDto dto)
     {
         var userId = User.GetUserId();
@@ -32,7 +33,7 @@ public class NotesController : ControllerBase
         return Ok(Result.Success(new { Id = noteId }));
     }
     
-    [HttpPut("{noteId:int}"), Authorize]
+    [HttpPut("{noteId:int}")]
     public async Task<IActionResult> UpdateNoteAsync(EditorNoteDto dto, int noteId)
     {
         var userId = User.GetUserId();
@@ -44,7 +45,7 @@ public class NotesController : ControllerBase
         return NoContent();
     }
     
-    [HttpDelete("{noteId:int}"), Authorize]
+    [HttpDelete("{noteId:int}")]
     public async Task<IActionResult> DeleteNoteAsync(int noteId)
     {
         var userId = User.GetUserId();
@@ -56,7 +57,7 @@ public class NotesController : ControllerBase
         return NoContent();
     }
     
-    [HttpGet("{noteId:int}"), Authorize]
+    [HttpGet("{noteId:int}")]
     public async Task<IActionResult> GetNoteAsync(int noteId)
     {
         var userId = User.GetUserId();

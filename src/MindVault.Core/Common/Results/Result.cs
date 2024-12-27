@@ -35,5 +35,6 @@ public class Result
     public string[] Errors { get; set; }
     
     public static Result Success(object data, int status = 200) => new(true, data,Array.Empty<string>(), status);
+    public static Result Success(int status = 200) => new(true, null,Array.Empty<string>(), status);
     public static Result Failure(IEnumerable<string> errors, int status = 400) => new(false, default!, errors, status);
 }
