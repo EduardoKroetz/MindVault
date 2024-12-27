@@ -1,4 +1,4 @@
-using MindVault.Application.Common.Models;
+using MindVault.Core.Common.Results;
 
 namespace MindVault.Infrastructure.Identity;
 
@@ -6,6 +6,6 @@ public static class IdentityResultExtension
 {
     public static Result ToApplicationResult(this IdentityResult result)
     => result.Succeeded ?
-        Result.Success() : 
+        Result.Success(new {}) : 
         Result.Failure(result.Errors.Select(e => e.Description));
 }

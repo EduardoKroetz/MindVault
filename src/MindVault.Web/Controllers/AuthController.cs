@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindVault.Application.Common.Interfaces;
-using MindVault.Application.Common.Models;
+using MindVault.Application.DTOs.Auth.Login;
 using MindVault.Application.DTOs.Users.CreateUser;
+using MindVault.Core.Common.Results;
 using MindVault.Core.Services;
 
 namespace MindVault.Web.Controllers;
@@ -13,22 +13,32 @@ public class AuthController : ControllerBase
 {
     private readonly IIdentityService _identityService;
     private readonly ITokenService _tokenService;
+    private readonly IAuthService _authService;
 
-    public AuthController(IIdentityService identityService, ITokenService tokenService)
+    public AuthController(IIdentityService identityService, ITokenService tokenService, IAuthService authService)
     {
         _identityService = identityService;
         _tokenService = tokenService;
+        _authService = authService;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync(CreateUserDto dto)
     {
-        var res = await _identityService.CreateUserAsync(dto);
-        if (res.Result.Succeeded is false)
-            return BadRequest(res.Result);
+        var result = await _authService.RegisterAsync(dto.UserName, dto.Email, dto.Password);
+        if (result.Succeeded is false)
+            return BadRequest(result);
         
-        var token = _tokenService.GenerateToken(res.UserId, dto.UserName, dto.Email);
+        return Ok(Result<object>.Success(new { Token = result.Data }));
+    }
+    
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginAsync(LoginDto dto)
+    {
+        var result = await _authService.LoginAsync(dto.Email, dto.Password);
+        if (result.Succeeded is false)
+            return BadRequest(result);
         
-        return Ok(ApiResult.Success(new { token }));
+        return Ok(Result<object>.Success(new { Token = result.Data }));
     }
 }
