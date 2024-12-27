@@ -27,4 +27,16 @@ public class NotesController : ControllerBase
         
         return Ok(Result.Success(new { Id = noteId }));
     }
+    
+    [HttpDelete("{noteId:int}"), Authorize]
+    public async Task<IActionResult> DeleteNoteAsync(int noteId)
+    {
+        var userId = User.GetUserId();
+
+        var result = await _noteService.DeleteNoteAsync(noteId, userId);
+        if (result.Succeeded is false)
+            return BadRequest(result);
+        
+        return NoContent();
+    }
 }

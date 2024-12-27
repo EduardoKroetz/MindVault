@@ -27,4 +27,18 @@ public class NoteService : INoteService
         
         return note.Id;
     }
+    
+    public async Task<Result> DeleteNoteAsync(int noteId, string userId)
+    {
+        var note = await _noteRepository.GetByIdAsync(noteId);
+        if (note is null)
+            return Result.Failure(["Nota não encontrada"]);
+
+        if (note.UserId != userId)
+            return Result.Failure(["Você não tem permissão para deletar essa Nota"], 403);
+
+        await _noteRepository.DeleteAsync(note);    
+        
+        return Result.Success(noteId);
+    }
 }
