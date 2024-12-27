@@ -39,6 +39,7 @@ public static class DependencyInjection
         
         //Config Repositories
         builder.Services.AddScoped<INoteRepository, NoteRepository>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
     }
 }

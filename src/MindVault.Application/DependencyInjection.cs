@@ -51,5 +51,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<INoteService, NoteService>();
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
     }
 }
