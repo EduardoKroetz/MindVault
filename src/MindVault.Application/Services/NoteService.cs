@@ -1,3 +1,5 @@
+using AutoMapper;
+using MindVault.Application.DTOs.Notes.GetNote;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
@@ -57,5 +59,17 @@ public class NoteService : INoteService
         await _noteRepository.DeleteAsync(note);    
         
         return Result.Success(noteId);
+    }
+    
+    public async Task<Result<Note?>> GetNoteAsync(int noteId, string userId)
+    {
+        var note = await _noteRepository.GetByIdAsync(noteId);
+        if (note is null)
+            return Result<Note?>.Failure(["Nota não encontrada"]);
+
+        if (note.UserId != userId)
+            return Result<Note?>.Failure(["Você não tem permissão para acessar essa Nota"], 403);
+        
+        return Result<Note?>.Success(note);
     }
 }

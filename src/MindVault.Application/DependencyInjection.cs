@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using MindVault.Application.Common.AutoMapper;
 using MindVault.Application.Services;
 using MindVault.Core.Services;
 
@@ -42,6 +43,9 @@ public static class DependencyInjection
                 RequireExpirationTime = true
             };
         });
+        
+        //Add automapper
+        builder.Services.AddAutoMapper(typeof(MapperProfile));
         
         //Add application services
         builder.Services.AddScoped<ITokenService, TokenService>();
