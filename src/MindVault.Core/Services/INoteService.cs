@@ -11,4 +11,7 @@ public interface INoteService
     Task<Result<Note?>> GetNoteAsync(int noteId, string userId);
     Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber,
         string? reference, DateTime? updatedAt, int? categoryId);
+
+    Task<Result> AddNoteCategoryAsync(string userId, int noteId, int categoryId);
+    Task<Result> RemoveNoteCategoryAsync(string userId, int noteId, int categoryId);
 }

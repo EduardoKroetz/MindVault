@@ -1,5 +1,3 @@
-using System.Collections;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindVault.Application.DTOs.Notes.CreateNote;
@@ -42,7 +40,7 @@ public class NotesController : ControllerBase
 
         var result = await _noteService.UpdateNoteAsync(dto.Title, dto.Content, noteId, userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
         
         return NoContent();
     }
@@ -54,7 +52,7 @@ public class NotesController : ControllerBase
 
         var result = await _noteService.DeleteNoteAsync(noteId, userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
         
         return NoContent();
     }
@@ -66,7 +64,7 @@ public class NotesController : ControllerBase
 
         var result = await _noteService.GetNoteAsync(noteId, userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
         
         var dto = _mapper.Map<GetNoteDto>(result.Data);
         
@@ -85,5 +83,32 @@ public class NotesController : ControllerBase
         
         return Ok(result);
     }
+    
+    [HttpPost("{noteId:int}/categories/{categoryId:int}"), Authorize]
+    public async Task<IActionResult> AddNoteCategoryAsync([FromRoute] int noteId, [FromRoute] int categoryId)
+    {
+        var userId = User.GetUserId();
+        
+        var result = await _noteService.AddNoteCategoryAsync(userId ,noteId, categoryId);
+        
+        if (result.Succeeded is false)
+            return this.HandleFailure(result);
+        
+        return NoContent();
+    }
+    
+    [HttpDelete("{noteId:int}/categories/{categoryId:int}"), Authorize]
+    public async Task<IActionResult> RemoveNoteCategoryAsync([FromRoute] int noteId, [FromRoute] int categoryId)
+    {
+        var userId = User.GetUserId();
+        
+        var result = await _noteService.RemoveNoteCategoryAsync(userId ,noteId, categoryId);
+        
+        if (result.Succeeded is false)
+            return this.HandleFailure(result);
+        
+        return NoContent();
+    }
+    
     
 }

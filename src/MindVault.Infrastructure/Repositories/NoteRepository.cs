@@ -13,10 +13,18 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
     {
     }
 
+    public new async Task<Note?> GetByIdAsync(int id)
+    {
+        return await _context.Notes
+            .Include(x => x.Categories)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber, string[]? references, DateTime? updatedAt, int? categoryId)
     {
         var query = _context.Notes
             .Where(note => note.UserId == userId)
+            .Include(x => x.Categories)
             .OrderByDescending(x => x.UpdatedAt)
             .AsQueryable();
         
