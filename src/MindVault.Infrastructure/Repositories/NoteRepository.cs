@@ -13,7 +13,7 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
     {
     }
 
-    public async Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber, string[]? references, DateTime? updatedAt)
+    public async Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber, string[]? references, DateTime? updatedAt, int? categoryId)
     {
         var query = _context.Notes
             .Where(note => note.UserId == userId)
@@ -25,6 +25,14 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
         
         if (references is not null)
              query = FilterNotesByReferences(query, references);
+
+        if (categoryId is not null)
+        {
+            query = query
+                .Include(x => x.Categories)
+                .Where(x => 
+                    x.Categories.Any(category => category.Id == categoryId));
+        }
         
         var totalCount = await query.CountAsync();
         

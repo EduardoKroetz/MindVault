@@ -76,13 +76,13 @@ public class NoteService : INoteService
         return Result<Note?>.Success(note);
     }
 
-    public async Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber, string? reference, DateTime? updatedAt)
+    public async Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber, string? reference, DateTime? updatedAt, int? categoryId)
     {
         var references = reference is null 
             ? null 
             : reference.ToLower().Split(' ').Where(x => x.Length > 1 && !BlockedWords.Contains(x)).ToArray();
         
-        var data = await _noteRepository.GetNotesAsync(userId, pageSize, pageNumber, references, updatedAt);
+        var data = await _noteRepository.GetNotesAsync(userId, pageSize, pageNumber, references, updatedAt, categoryId);
 
         return data;
     }

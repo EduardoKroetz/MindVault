@@ -78,7 +78,7 @@ public class NotesController : ControllerBase
     {
         var userId = User.GetUserId();
 
-        var data = await _noteService.GetNotesAsync(userId, searchNoteDto.PageSize, searchNoteDto.PageNumber, searchNoteDto.Reference, searchNoteDto.UpdatedAt);
+        var data = await _noteService.GetNotesAsync(userId, searchNoteDto.PageSize, searchNoteDto.PageNumber, searchNoteDto.Reference, searchNoteDto.UpdatedAt, searchNoteDto.CategoryId);
         
         var dto = _mapper.Map<IEnumerable<GetNoteDto>>(data.Notes);
         var result = PaginatedResult<GetNoteDto>.Create(dto, data.TotalCount ,searchNoteDto.PageNumber, searchNoteDto.PageSize);
