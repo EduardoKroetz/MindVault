@@ -9,4 +9,5 @@ public interface ICategoryService
     Task<Result> DeleteCategoryAsync(int categoryId, string userId);
     Task<Result> UpdateCategoryAsync(string name, string description, string color, int categoryId, string userId);
     Task<Result<Category?>> GetCategoryAsync(int categoryId, string userId);
+    Task<Result<IEnumerable<Category>?>> GetCategoriesAsync(int pageNumber, int pageSize, string userId);
 }

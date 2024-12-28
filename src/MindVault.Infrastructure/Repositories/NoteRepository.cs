@@ -37,7 +37,6 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
         if (categoryId is not null)
         {
             query = query
-                .Include(x => x.Categories)
                 .Where(x => 
                     x.Categories.Any(category => category.Id == categoryId));
         }

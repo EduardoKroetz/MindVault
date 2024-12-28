@@ -74,6 +74,12 @@ public class CategoryService : ICategoryService
         return Result<Category>.Success(category);
     }
     
+    public async Task<Result<IEnumerable<Category>?>> GetCategoriesAsync(int pageNumber, int pageSize ,string userId)
+    {
+        var categories = await _categoryRepository.GetAsync(pageNumber, pageSize, userId);
+        return Result<IEnumerable<Category>>.Success(categories);
+    }
+    
     private bool HasPermissionToAccessCategory(Category category, string userId)
         => category.UserId == userId;
     

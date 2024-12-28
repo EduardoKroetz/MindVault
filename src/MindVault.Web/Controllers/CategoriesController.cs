@@ -1,3 +1,4 @@
+using System.Collections;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ public class CategoriesController : ControllerBase
         
         var result = await _categoryService.GetCategoryAsync(categoryId, userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
 
         var dto = _mapper.Map<GetCategoryDto>(result.Data);
         
@@ -54,7 +55,7 @@ public class CategoriesController : ControllerBase
         
         var result = await _categoryService.UpdateCategoryAsync(dto.Name, dto.Description, dto.Color, categoryId, userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
         
         return NoContent();
     }
@@ -66,8 +67,22 @@ public class CategoriesController : ControllerBase
         
         var result = await _categoryService.DeleteCategoryAsync(categoryId , userId);
         if (result.Succeeded is false)
-            return StatusCode(result.Status, result);
+            return this.HandleFailure(result);
         
         return NoContent();
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetCategoriesAsync([FromQuery] int pageSize = 15, [FromQuery] int pageNumber = 1)
+    {
+        var userId = User.GetUserId();
+        
+        var result = await _categoryService.GetCategoriesAsync(pageNumber, pageSize, userId);
+        if (result.Succeeded is false)
+            return this.HandleFailure(result);
+
+        var dto = _mapper.Map<IEnumerable<GetCategoryDto>>(result.Data);
+        
+        return Ok(Result<IEnumerable<GetCategoryDto>>.Success(dto));
     }
 }
