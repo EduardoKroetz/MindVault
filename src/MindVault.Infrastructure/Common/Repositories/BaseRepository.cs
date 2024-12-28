@@ -7,7 +7,7 @@ namespace MindVault.Infrastructure.Common.Repositories;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 {
-    private readonly MindVaultDbContext _context;
+    protected readonly MindVaultDbContext _context;
 
     public BaseRepository(MindVaultDbContext context)
     {

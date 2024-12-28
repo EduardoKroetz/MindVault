@@ -5,5 +5,6 @@ namespace MindVault.Core.Repositories;
 
 public interface INoteRepository : IBaseRepository<Note>
 {
-    
+    Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber,
+        string[]? references, DateTime? updatedAt);
 }

@@ -1,5 +1,4 @@
-using AutoMapper;
-using MindVault.Application.DTOs.Notes.GetNote;
+using System.Collections;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
@@ -10,7 +9,11 @@ namespace MindVault.Application.Services;
 public class NoteService : INoteService
 {
     private readonly INoteRepository _noteRepository;
-
+    private readonly string[] BlockedWords = new string[]
+    {
+        "de", "do", "da", "e", "o", "a", "em", "no", "na", "por", "com"
+    };
+    
     public NoteService(INoteRepository noteRepository)
     {
         _noteRepository = noteRepository;
@@ -71,5 +74,16 @@ public class NoteService : INoteService
             return Result<Note?>.Failure(["Você não tem permissão para acessar essa Nota"], 403);
         
         return Result<Note?>.Success(note);
+    }
+
+    public async Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber, string? reference, DateTime? updatedAt)
+    {
+        var references = reference is null 
+            ? null 
+            : reference.ToLower().Split(' ').Where(x => x.Length > 1 && !BlockedWords.Contains(x)).ToArray();
+        
+        var data = await _noteRepository.GetNotesAsync(userId, pageSize, pageNumber, references, updatedAt);
+
+        return data;
     }
 }

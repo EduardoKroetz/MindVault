@@ -1,8 +1,10 @@
+using System.Collections;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindVault.Application.DTOs.Notes.CreateNote;
 using MindVault.Application.DTOs.Notes.GetNote;
+using MindVault.Application.DTOs.Notes.SearchNote;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Services;
 using MindVault.Web.Extensions;
@@ -70,4 +72,18 @@ public class NotesController : ControllerBase
         
         return Ok(Result<GetNoteDto>.Success(dto));
     }
+    
+    [HttpGet("search"), Authorize]
+    public async Task<IActionResult> GetNotesAsync([FromQuery] SearchNoteDto searchNoteDto)
+    {
+        var userId = User.GetUserId();
+
+        var data = await _noteService.GetNotesAsync(userId, searchNoteDto.PageSize, searchNoteDto.PageNumber, searchNoteDto.Reference, searchNoteDto.UpdatedAt);
+        
+        var dto = _mapper.Map<IEnumerable<GetNoteDto>>(data.Notes);
+        var result = PaginatedResult<GetNoteDto>.Create(dto, data.TotalCount ,searchNoteDto.PageNumber, searchNoteDto.PageSize);
+        
+        return Ok(result);
+    }
+    
 }
