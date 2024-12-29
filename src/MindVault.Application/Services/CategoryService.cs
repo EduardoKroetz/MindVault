@@ -1,7 +1,7 @@
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Application.Services;
 

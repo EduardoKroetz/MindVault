@@ -1,7 +1,7 @@
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 
-namespace MindVault.Core.Services;
+namespace MindVault.Application.Services.Interfaces;
 
 public interface ICategoryService
 {

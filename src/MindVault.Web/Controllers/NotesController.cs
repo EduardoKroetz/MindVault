@@ -4,7 +4,7 @@ using MindVault.Application.DTOs.Notes.CreateNote;
 using MindVault.Application.DTOs.Notes.GetNote;
 using MindVault.Application.DTOs.Notes.SearchNote;
 using MindVault.Core.Common.Results;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 using MindVault.Web.Extensions;
 
 namespace MindVault.Web.Controllers;
@@ -66,9 +66,7 @@ public class NotesController : ControllerBase
         if (result.Succeeded is false)
             return this.HandleFailure(result);
         
-        var dto = _mapper.Map<GetNoteDto>(result.Data);
-        
-        return Ok(Result<GetNoteDto>.Success(dto));
+        return Ok(result);
     }
     
     [HttpGet("search"), Authorize]

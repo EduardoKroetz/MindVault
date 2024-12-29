@@ -1,4 +1,4 @@
-namespace MindVault.Core.Services;
+namespace MindVault.Application.Services.Interfaces;
 
 public interface ITokenService
 {

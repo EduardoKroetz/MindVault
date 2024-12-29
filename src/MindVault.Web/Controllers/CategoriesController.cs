@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindVault.Application.DTOs.Categories.EditorCategory;
 using MindVault.Application.DTOs.Categories.GetCategory;
 using MindVault.Core.Common.Results;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 using MindVault.Web.Extensions;
 
 namespace MindVault.Web.Controllers;

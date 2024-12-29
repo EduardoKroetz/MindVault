@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindVault.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using MindVault.Infrastructure.Data;
 namespace MindVault.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MindVaultDbContext))]
-    partial class MindVaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241229005922_Add_Note_Base64Iv")]
+    partial class Add_Note_Base64Iv
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

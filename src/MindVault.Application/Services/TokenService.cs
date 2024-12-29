@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Application.Services;
 

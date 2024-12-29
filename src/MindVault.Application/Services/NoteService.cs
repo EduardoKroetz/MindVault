@@ -1,7 +1,10 @@
+using System.Text;
+using AutoMapper;
+using MindVault.Application.DTOs.Notes.GetNote;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Application.Services;
 
@@ -9,24 +12,33 @@ public class NoteService : INoteService
 {
     private readonly INoteRepository _noteRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IEncryptionService _encryptionService;
+    private readonly IMapper _mapper;
     private readonly string[] _blockedWords = new string[]
     {
         "de", "do", "da", "e", "o", "a", "em", "no", "na", "por", "com"
     };
     
-    public NoteService(INoteRepository noteRepository, ICategoryRepository categoryRepository)
+    public NoteService(INoteRepository noteRepository, ICategoryRepository categoryRepository, IEncryptionService encryptionService, IMapper mapper)
     {
         _noteRepository = noteRepository;
         _categoryRepository = categoryRepository;
+        _encryptionService = encryptionService;
+        _mapper = mapper;
     }
 
     public async Task<int> CreateNoteAsync(string title, string content, string userId)
     {
+        var iv = _encryptionService.GenerateRandomIv();
+        var cipherContent = _encryptionService.Encrypt(content, iv);
+        var base64Iv = Convert.ToBase64String(iv);
+        
         var note = new Note
         {
             Title = title,
-            Content = content,
-            UserId = userId
+            CipherContent = cipherContent,
+            UserId = userId,
+            Base64IV = base64Iv,
         };
 
         await _noteRepository.AddAsync(note);    
@@ -38,13 +50,17 @@ public class NoteService : INoteService
     {
         var note = await _noteRepository.GetByIdAsync(noteId);
         if (note is null)
-            return Result.Failure(["Anotação não encontrada"]);
+            return Result.Failure(["Anotação não encontrada"]); 
 
         if (HasUserPermissionToAccessNote(note, userId) is false)
             return Result.Failure(["Você não tem permissão para atualizar essa Anotação"], 403);
 
+        // Encrypt content
+        var iv = Convert.FromBase64String(note.Base64IV);
+        var cipherContent = _encryptionService.Encrypt(content, iv);
+        
         note.Title = title;
-        note.Content = content;
+        note.CipherContent = cipherContent;
         
         await _noteRepository.UpdateAsync(note);    
         
@@ -65,16 +81,18 @@ public class NoteService : INoteService
         return Result.Success(noteId);
     }
     
-    public async Task<Result<Note?>> GetNoteAsync(int noteId, string userId)
+    public async Task<Result<GetNoteDto?>> GetNoteAsync(int noteId, string userId)
     {
         var note = await _noteRepository.GetByIdAsync(noteId);
         if (note is null)
-            return Result<Note?>.Failure(["Anotação não encontrada"]);
+            return Result<GetNoteDto?>.Failure(["Anotação não encontrada"]);
 
         if (HasUserPermissionToAccessNote(note, userId) is false)
-            return Result<Note?>.Failure(["Você não tem permissão para acessar essa Anotação"], 403);
+            return Result<GetNoteDto?>.Failure(["Você não tem permissão para acessar essa Anotação"], 403);
         
-        return Result<Note?>.Success(note);
+        var noteDto = _mapper.Map<GetNoteDto>(note);
+        
+        return Result<GetNoteDto?>.Success(noteDto);
     }
 
     public async Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber, string? reference, DateTime? updatedAt, int? categoryId)

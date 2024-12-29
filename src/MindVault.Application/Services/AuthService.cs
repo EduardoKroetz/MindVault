@@ -1,6 +1,6 @@
 using MindVault.Application.Common.Interfaces;
 using MindVault.Core.Common.Results;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Application.Services;
 

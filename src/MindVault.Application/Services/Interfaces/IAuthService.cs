@@ -1,6 +1,6 @@
 using MindVault.Core.Common.Results;
 
-namespace MindVault.Core.Services;
+namespace MindVault.Application.Services.Interfaces;
 
 public interface IAuthService
 {

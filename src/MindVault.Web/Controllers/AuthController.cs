@@ -3,7 +3,7 @@ using MindVault.Application.Common.Interfaces;
 using MindVault.Application.DTOs.Auth.Login;
 using MindVault.Application.DTOs.Users.CreateUser;
 using MindVault.Core.Common.Results;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Web.Controllers;
 

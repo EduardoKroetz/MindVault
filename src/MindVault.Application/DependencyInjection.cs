@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using MindVault.Application.Common.AutoMapper;
 using MindVault.Application.Services;
-using MindVault.Core.Services;
+using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Extensions.Application;
 
@@ -44,13 +44,15 @@ public static class DependencyInjection
             };
         });
         
-        //Add automapper
-        builder.Services.AddAutoMapper(typeof(MapperProfile));
-        
         //Add application services
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<INoteService, NoteService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+        
+        //Add automapper
+        builder.Services.AddScoped<ContentDecryptResolver>();
+        builder.Services.AddAutoMapper(typeof(MapperProfile));
     }
 }
