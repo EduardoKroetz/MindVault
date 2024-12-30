@@ -16,4 +16,8 @@
       <ProjectReference Include="..\MindVault.Infrastructure\MindVault.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="client-app\" />
+    </ItemGroup>
+
 </Project>
