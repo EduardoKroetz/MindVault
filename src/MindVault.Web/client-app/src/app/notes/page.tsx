@@ -1,5 +1,5 @@
-import NoteItem from "../components/note-item/note-item";
-import SearchNotes from "../components/search-notes/search-notes";
+import NoteItem from "../components/note-item";
+import SearchNotes from "../components/search-notes";
 import Layout from "../layouts/layout/layout";
 import styles from "./page.module.css";
 

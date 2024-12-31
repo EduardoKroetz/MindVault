@@ -1,6 +1,6 @@
 "use client"
 
-import Header from "@/app/components/header/header"
+import Header from "@/app/components/header"
 import styles from "./layout.module.css"
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 

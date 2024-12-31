@@ -1,4 +1,4 @@
-import styles from "./note-item.module.css"
+import styles from "./styles.module.css"
 
 export default function NoteItem()
 {

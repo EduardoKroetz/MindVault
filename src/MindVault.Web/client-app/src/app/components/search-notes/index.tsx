@@ -1,4 +1,4 @@
-import styles from "./search-notes.module.css"
+import styles from "./styles.module.css"
 
 export default function SearchNotes()
 {
