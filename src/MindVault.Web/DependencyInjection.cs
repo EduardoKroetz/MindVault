@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MindVault.Web.Filters;
+using MindVault.Web.Middlewares;
 
 namespace MindVault.Web;
 
@@ -18,5 +19,8 @@ public static class DependencyInjection
         {
             x.SuppressModelStateInvalidFilter = true;
         });
+
+        builder.Services.AddExceptionHandler<ExceptionHandler>();
+        builder.Services.AddProblemDetails();
     }
 }

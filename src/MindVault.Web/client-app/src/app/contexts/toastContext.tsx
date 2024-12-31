@@ -25,7 +25,7 @@ export const useToast = () => {
 };
 
 export const ToastProvider = ({ children }: any) => {
-  const [toasts, setToasts] = useState<IToast[]>([{ id: 123, message: "teste", success: true }]);
+  const [toasts, setToasts] = useState<IToast[]>([]);
 
   const addToast = (message: string, success: boolean) => {
     const id = new Date().getTime();

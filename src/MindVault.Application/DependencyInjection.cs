@@ -46,13 +46,12 @@ public static class DependencyInjection
         
         //Add application services
         builder.Services.AddScoped<ITokenService, TokenService>();
-        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<INoteService, NoteService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<IEncryptionService, EncryptionService>();
         
         //Add automapper
-        builder.Services.AddScoped<ContentDecryptResolver>();
         builder.Services.AddAutoMapper(typeof(MapperProfile));
     }
 }

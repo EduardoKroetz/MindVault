@@ -9,7 +9,7 @@ public class MapperProfile : Profile
     public MapperProfile()
     {
         CreateMap<Note, GetNoteDto>()
-            .ForMember(dest => dest.Content, opt => opt.MapFrom<ContentDecryptResolver>());
+            .ForMember(dest => dest.Content, op => op.MapFrom(x => x.CipherContent));
         CreateMap<Category, GetCategoryDto>();
     }
 }

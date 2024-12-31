@@ -1,15 +1,16 @@
 using MindVault.Application.Common.Interfaces;
+using MindVault.Application.DTOs.Users.GetUserDto;
 using MindVault.Core.Common.Results;
 using MindVault.Application.Services.Interfaces;
 
 namespace MindVault.Application.Services;
 
-public class AuthService : IAuthService
+public class AccountService : IAccountService
 {
     private readonly IIdentityService _identityService;
     private readonly ITokenService _tokenService;
 
-    public AuthService(IIdentityService identityService, ITokenService tokenService)
+    public AccountService(IIdentityService identityService, ITokenService tokenService)
     {
         _identityService = identityService;
         _tokenService = tokenService;
@@ -39,5 +40,14 @@ public class AuthService : IAuthService
         var userData = result.Data;
         var token = _tokenService.GenerateToken(userData.UserId, userData.Username, userData.Email);
         return Result<string>.Success(token);
+    }
+
+    public async Task<Result<GetUserDto?>> GetUserAsync(string email)
+    {
+        var result = await _identityService.GetUserByEmail(email);
+        if (result.Succeeded is false)
+            return Result<GetUserDto?>.Failure(result.Errors);
+        
+        return Result<GetUserDto?>.Success(result.Data);      
     }
 }

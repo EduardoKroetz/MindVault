@@ -1,6 +1,9 @@
+using System.Collections;
 using System.Text;
 using AutoMapper;
+using MindVault.Application.DTOs.Categories.GetCategory;
 using MindVault.Application.DTOs.Notes.GetNote;
+using MindVault.Application.DTOs.Notes.SearchNote;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
@@ -90,20 +93,35 @@ public class NoteService : INoteService
         if (HasUserPermissionToAccessNote(note, userId) is false)
             return Result<GetNoteDto?>.Failure(["Você não tem permissão para acessar essa Anotação"], 403);
         
+        note.CipherContent = _encryptionService.Decrypt(note.CipherContent, note.Base64IV);
+        
         var noteDto = _mapper.Map<GetNoteDto>(note);
         
         return Result<GetNoteDto?>.Success(noteDto);
     }
 
-    public async Task<(IEnumerable<Note> Notes, int TotalCount)> GetNotesAsync(string userId, int pageSize, int pageNumber, string? reference, DateTime? updatedAt, int? categoryId)
+    public async Task<PaginatedResult<GetNoteDto>> GetNotesAsync(string userId, SearchNoteDto dto)
     {
-        var references = reference is null 
+        var references = dto.Reference is null 
             ? null 
-            : reference.ToLower().Split(' ').Where(x => x.Length > 1 && !_blockedWords.Contains(x)).ToArray();
+            : dto.Reference.ToLower().Split(' ').Where(x => x.Length > 1 && !_blockedWords.Contains(x)).ToArray();
         
-        var data = await _noteRepository.GetNotesAsync(userId, pageSize, pageNumber, references, updatedAt, categoryId);
-
-        return data;
+        var data = await _noteRepository.GetNotesAsync(userId, dto.PageSize, dto.PageNumber, references, dto.UpdatedAt, dto.CategoryId);
+        
+        var resultDto = data.Notes.Select(x => new GetNoteDto
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Content = _encryptionService.Decrypt(x.CipherContent, x.Base64IV),
+            UserId = x.UserId,
+            Categories = _mapper.Map<ICollection<GetCategoryDto>>(x.Categories),
+            CreatedAt = x.CreatedAt,
+            UpdatedAt = x.UpdatedAt,
+        });
+        
+        var result = PaginatedResult<GetNoteDto>.Create(resultDto, data.Count, dto.PageNumber, dto.PageSize);
+        
+        return result;
     }
     
     public async Task<Result> AddNoteCategoryAsync(string userId, int noteId, int categoryId)

@@ -56,7 +56,7 @@ public class EncryptionService : IEncryptionService
         
             return Encoding.UTF8.GetString(plainTextBytes);
         }
-        catch (Exception e)
+        catch
         {
             throw new InvalidOperationException("A descriptografia dos dados falhou");
         }
