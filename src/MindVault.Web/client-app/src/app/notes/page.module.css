@@ -1,0 +1,11 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+}
+

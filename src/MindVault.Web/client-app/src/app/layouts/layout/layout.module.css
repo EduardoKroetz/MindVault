@@ -1,0 +1,11 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  height: 100vh;
+}
+
+.main {
+  padding: .6rem 1rem;
+  flex: 1;
+}

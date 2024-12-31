@@ -7,7 +7,7 @@ export default function Header()
     <div className={styles.header}>
       <nav className={styles.nav}>
         <a className={styles.title} href="/">
-          <h1>MindVault</h1>
+          <h1 className="h3">MindVault</h1>
         </a>
         <div className={styles.links}>
           <Link href={"/notes"}>Anotações</Link>

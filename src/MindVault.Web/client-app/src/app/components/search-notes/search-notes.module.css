@@ -1,0 +1,6 @@
+.search {
+  display: flex;
+  gap: .3rem;
+  flex: 1;
+}
+
