@@ -31,7 +31,6 @@ export const AccountProvider = ({ children }: any) => {
     if (token){
       try {
         const response : any = await axiosInstance.get("/accounts")
-        console.log(response)
         setAccount(response.data.data)
       } catch (error: any)
       {

@@ -6,6 +6,7 @@ import "./globals.css";
 import { ToastProvider } from "./contexts/toastContext";
 import ToastList from "./components/toast-list";
 import { AccountProvider } from "./contexts/accountContext";
+import { NotesProvider } from "./contexts/notesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ToastProvider>
           <AccountProvider>
-            {children}
+            <NotesProvider>
+              {children}
+            </NotesProvider>
           </AccountProvider>
           <ToastList />
         </ToastProvider>
