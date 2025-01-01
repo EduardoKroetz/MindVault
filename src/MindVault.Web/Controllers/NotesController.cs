@@ -105,5 +105,15 @@ public class NotesController : ControllerBase
         return NoContent();
     }
     
+    [HttpGet("dates"), Authorize]
+    public async Task<IActionResult> GetNoteDatesAsync([FromQuery] int pageSize = 30, [FromQuery] int pageNumber = 1)
+    {
+        var userId = User.GetUserId();
+
+        var result = await _noteService.GetNotesDatesAsync(userId, pageSize, pageNumber);
+        
+        return Ok(result);
+    }
+    
     
 }

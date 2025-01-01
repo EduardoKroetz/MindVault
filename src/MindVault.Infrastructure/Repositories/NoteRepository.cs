@@ -20,16 +20,16 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber, string[]? references, DateTime? updatedAt, int? categoryId)
+    public async Task<(IEnumerable<Note> Notes, int Count)> GetNotesAsync(string userId, int pageSize, int pageNumber, string[]? references, DateTime? date, int? categoryId)
     {
         var query = _context.Notes
             .Where(note => note.UserId == userId)
             .Include(x => x.Categories)
-            .OrderByDescending(x => x.UpdatedAt)
+            .OrderByDescending(x => x.CreatedAt)
             .AsQueryable();
         
-        if (updatedAt is not null)
-            query = query.Where(note => note.UpdatedAt  >= updatedAt.Value);
+        if (date is not null)
+            query = query.Where(note => note.CreatedAt.Date.Equals(date.Value.Date));
         
         if (references is not null)
              query = FilterNotesByReferences(query, references);
@@ -51,6 +51,7 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
         return (notes, totalCount);
     }
 
+    
     private IQueryable<Note> FilterNotesByReferences(IQueryable<Note> query, string[] references)
     {
         return query
@@ -61,7 +62,23 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             })
             .Where(x => x.Score > 0)
             .OrderByDescending(x => x.Score)
-            .ThenByDescending(x => x.Note.UpdatedAt)
+            .ThenByDescending(x => x.Note.CreatedAt)
             .Select(x => x.Note);
+    }
+
+    public async Task<(IEnumerable<DateTimeOffset> Dates, int TotalCount)> GetNoteDates(string userId, int pageSize, int pageNumber)
+    {
+        var query = _context.Notes
+            .Where(x => x.UserId == userId)
+            .Select(x => x.CreatedAt)
+            .AsQueryable();
+            
+        var count = await query.CountAsync();
+            
+        var dates = await query
+            .OrderByDescending(x => x)
+            .ToListAsync();
+
+        return (dates, count);
     }
 }

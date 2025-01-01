@@ -4,6 +4,7 @@ using AutoMapper;
 using MindVault.Application.DTOs.Categories.GetCategory;
 using MindVault.Application.DTOs.Notes.GetNote;
 using MindVault.Application.DTOs.Notes.SearchNote;
+using MindVault.Application.Extensions;
 using MindVault.Core.Common.Results;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
@@ -106,7 +107,7 @@ public class NoteService : INoteService
             ? null 
             : dto.Reference.ToLower().Split(' ').Where(x => x.Length > 1 && !_blockedWords.Contains(x)).ToArray();
         
-        var data = await _noteRepository.GetNotesAsync(userId, dto.PageSize, dto.PageNumber, references, dto.UpdatedAt, dto.CategoryId);
+        var data = await _noteRepository.GetNotesAsync(userId, dto.PageSize, dto.PageNumber, references, dto.Date, dto.CategoryId);
         
         var resultDto = data.Notes.Select(x => new GetNoteDto
         {
@@ -115,12 +116,20 @@ public class NoteService : INoteService
             Content = _encryptionService.Decrypt(x.CipherContent, x.Base64IV),
             UserId = x.UserId,
             Categories = _mapper.Map<ICollection<GetCategoryDto>>(x.Categories),
-            CreatedAt = x.CreatedAt,
-            UpdatedAt = x.UpdatedAt,
+            CreatedAt = x.CreatedAt.ToBrazilianDateTime(),
+            UpdatedAt = x.UpdatedAt.ToBrazilianDateTime(),
         });
         
         var result = PaginatedResult<GetNoteDto>.Create(resultDto, data.Count, dto.PageNumber, dto.PageSize);
         
+        return result;
+    }
+    
+    public async Task<PaginatedResult<DateTimeOffset>> GetNotesDatesAsync(string userId, int pageSize, int pageNumber)
+    {
+        var data = await _noteRepository.GetNoteDates(userId, pageSize, pageNumber);
+        
+        var result = PaginatedResult<DateTimeOffset>.Create(data.Dates, data.TotalCount, pageNumber, pageSize);
         return result;
     }
     
