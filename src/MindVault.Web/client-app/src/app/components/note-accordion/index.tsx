@@ -5,19 +5,26 @@ import NoteItem from "../note-item";
 import { useEffect, useState } from "react";
 import { useNotes } from "@/app/contexts/notesContext";
 import INote from "@/app/Interfaces/INote";
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem } from "reactstrap";
 
 export default function NoteAccordion({ date } : { date: Date} )
 {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState<string | string[]>([]);
   const [notes, setNotes] = useState<INote[]>([])
   const [pageNumber, setPageNumber] = useState(1);
-  const { fetchNotes } = useNotes();
+  const { fetchNotes, notes: memoryNotes } = useNotes();
   const pageSize = 20;
 
   useEffect(() => {
-    if (isOpen)
+    
+  }, [memoryNotes])
+
+  const toggle = (id: string) => {
+    setOpen(open === id ? [] : id);
+
+    if (open)
       handleGetNotes()
-  },[isOpen])
+  };
 
   const handleGetNotes = async () =>
   {
@@ -25,22 +32,22 @@ export default function NoteAccordion({ date } : { date: Date} )
     setNotes(notes)
   }
 
+
+
   return (
-    <div className="accordion-item">
-      <h2 onClick={() => setIsOpen(v => !v)} className="accordion-header">
-        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-          { DateUtils.FormatDateOnly(date) }
-        </button>
-      </h2>
-      <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse">
-        <div className="accordion-body">
+    <Accordion open={open} toggle={toggle}>
+      <AccordionItem>
+        <AccordionHeader targetId={date.toString()}>
+          {DateUtils.FormatDateOnly(date)}
+        </AccordionHeader>
+        <AccordionBody accordionId={date.toString()}>
           <ul className="list-group">
-            { notes.map(x => (
-              <NoteItem key={x.id}/>
-            )) }
+            {notes.map((note) => (
+              <NoteItem note={note} key={note.id} />
+            ))}
           </ul>
-        </div>
-      </div>
-    </div>
+        </AccordionBody>
+      </AccordionItem>
+    </Accordion>
   )
 }

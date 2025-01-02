@@ -7,6 +7,7 @@ import { ToastProvider } from "./contexts/toastContext";
 import ToastList from "./components/toast-list";
 import { AccountProvider } from "./contexts/accountContext";
 import { NotesProvider } from "./contexts/notesContext";
+import { CategoriesProvider } from "./contexts/categoriesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
         <ToastProvider>
           <AccountProvider>
             <NotesProvider>
-              {children}
+              <CategoriesProvider>
+                {children}
+              </CategoriesProvider>
             </NotesProvider>
           </AccountProvider>
           <ToastList />

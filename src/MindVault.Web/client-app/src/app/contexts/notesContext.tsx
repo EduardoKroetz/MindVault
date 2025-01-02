@@ -1,24 +1,23 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import useToastMessage from "../hooks/useToastMessage";
 import axiosInstance from "../api/axios";
 import { ErrorUtils } from "../Utils/ErrorUtils";
 import INote from "../Interfaces/INote";
 import DateUtils from "../Utils/DateUtils";
-import { parseISO } from "date-fns";
 
 const NotesContext = createContext<{
   notes: INote[];
   dates: Date[];
-  fetchDates: () => void;
   fetchNotes: (date: Date, pageNumber: number, pageSize: number) => Promise<INote[]>
+  addNote: (noteId: number) => Promise<void>,
   hasDatesNextPage: boolean,
   totalNotes: number,
 }>({
   notes: [],
   dates: [],
-  fetchDates: () => {},
+  async addNote(noteId) {},
   async fetchNotes(date, pageNumber, pageSize) {
     return []
   },
@@ -45,6 +44,7 @@ export const NotesProvider = ({ children }: any) => {
   const showToast = useToastMessage();
 
   useEffect(() => {
+    fetchDates()
     loadTotalNotes();
   }, [])
 
@@ -94,8 +94,15 @@ export const NotesProvider = ({ children }: any) => {
     return memoryNotes;
   }
 
+  const addNote = async (noteId: number) => {
+    const getNoteResponse = await axiosInstance.get("/notes/"+noteId);
+    const note = getNoteResponse.data.data;
+    setNotes(n => [note, ...n])
+    setTotalNotes(t => t++);
+  }
+
   return (
-    <NotesContext.Provider value={{notes,dates, fetchDates, fetchNotes ,hasDatesNextPage, totalNotes}}>
+    <NotesContext.Provider value={{notes, addNote, dates, fetchNotes ,hasDatesNextPage, totalNotes}}>
       {children}
     </NotesContext.Provider>
   );
