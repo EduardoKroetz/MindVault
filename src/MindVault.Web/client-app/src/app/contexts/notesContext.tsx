@@ -13,6 +13,7 @@ const NotesContext = createContext<{
   dates: Date[];
   addNote: (noteId: number) => Promise<void>,
   updateNote: (note: INote) => void,
+  removeNote: (note: INote) => void,
   fetchNotes: (date: Date, pageNumber: number, pageSize: number) => Promise<INote[]>
   filterMemoryNotes: (date: Date) => INote[]
   hasDatesNextPage: boolean,
@@ -22,6 +23,7 @@ const NotesContext = createContext<{
   dates: [],
   async addNote(noteId) {},
   updateNote(note: INote) {},
+  removeNote(note: INote) {},
   filterMemoryNotes(date) { return [] },
   async fetchNotes(date, pageNumber, pageSize) { return [] },
   hasDatesNextPage: true,
@@ -129,8 +131,12 @@ export const NotesProvider = ({ children }: any) => {
     setNotes(updatedNotes);
   }
 
+  const removeNote = (note: INote) => {
+    setNotes(n => n.filter(x => x.id != note.id));
+  }
+
   return (
-    <NotesContext.Provider value={{notes, addNote, updateNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
+    <NotesContext.Provider value={{notes, addNote, updateNote, removeNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
       {children}
     </NotesContext.Provider>
   );
