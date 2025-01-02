@@ -39,6 +39,6 @@ public class NoteMapping : IEntityTypeConfiguration<Note>
                 j => j.HasOne<Note>()
                     .WithMany()
                     .HasForeignKey("NoteId")
-                    .OnDelete(DeleteBehavior.Restrict));
+                    .OnDelete(DeleteBehavior.Cascade));
     }
 }
