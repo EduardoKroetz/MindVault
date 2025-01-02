@@ -19,22 +19,28 @@ export default function EditNote({ params }: { params: Promise<{ id: string }> }
 {  
   const { id } = React.use(params);
   const { categories } = useCategories();
-  const { updateNote } = useNotes();
+  const { updateNote, notes } = useNotes();
   const [note, setNote] = useState<INote | null>();
   const [title,setTitle] = useState('');
   const [titleError, setTitleError] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [selectedCategories, setSelectCategories] = useState<ICategory[]>(note?.categories ?? []);
-
-
   const router = useRouter();
   const showToast = useToastMessage();
 
   useEffect(() =>{
+    const idNumber = Number(id)
+    if (!idNumber)
+      return
+
     const fetchNote = async () => {
       try {
-        const response = await axiosInstance.get<IResponse<INote>>(`/notes/${id}`)
-        const note = response.data.data;
+        let note = notes.find(x => x.id === idNumber)
+        if (!note)
+        {
+          const response = await axiosInstance.get<IResponse<INote>>(`/notes/${id}`)
+          note = response.data.data;
+        }
         setNote(note);
         setTitle(note.title);
         setContent(note.content);

@@ -8,7 +8,7 @@ export default function NoteItem({ note } : { note: INote })
 {
   return (
     <ListGroupItem className={"list-group-item d-flex justify-between " + styles.note}>
-      <p className={styles.title}>{ note.title }</p>
+      <Link href={`/notes/${note.id}`} className={styles.title}>{ note.title }</Link>
       <div>
         <div className={styles.categories}>
           {note.categories.map(x => (
