@@ -10,13 +10,16 @@ import { Accordion, AccordionBody, AccordionHeader, AccordionItem } from "reacts
 export default function NoteAccordion({ date } : { date: Date} )
 {
   const [open, setOpen] = useState<string | string[]>([]);
-  const [notes, setNotes] = useState<INote[]>([])
+  const [notes, setNotes] = useState<INote[]>([]) // Anotações de X data
   const [pageNumber, setPageNumber] = useState(1);
-  const { fetchNotes, notes: memoryNotes } = useNotes();
+  const { fetchNotes, notes: memoryNotes, filterMemoryNotes } = useNotes();
   const pageSize = 20;
 
   useEffect(() => {
-    
+    let notes = filterMemoryNotes(date);
+    if (notes.length > 0)
+      setNotes(notes)
+
   }, [memoryNotes])
 
   const toggle = (id: string) => {
@@ -28,11 +31,12 @@ export default function NoteAccordion({ date } : { date: Date} )
 
   const handleGetNotes = async () =>
   {
-    const notes = await fetchNotes(date, pageNumber, pageSize)
+    let notes = filterMemoryNotes(date);
+    if (notes.length === 0)
+      notes = await fetchNotes(date, pageNumber, pageSize)
+
     setNotes(notes)
   }
-
-
 
   return (
     <Accordion open={open} toggle={toggle}>

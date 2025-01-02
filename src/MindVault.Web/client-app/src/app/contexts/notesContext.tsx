@@ -1,16 +1,18 @@
 "use client"
 
-import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import useToastMessage from "../hooks/useToastMessage";
 import axiosInstance from "../api/axios";
 import { ErrorUtils } from "../Utils/ErrorUtils";
 import INote from "../Interfaces/INote";
 import DateUtils from "../Utils/DateUtils";
+import IResponse from "../Interfaces/IResponse";
 
 const NotesContext = createContext<{
   notes: INote[];
   dates: Date[];
   fetchNotes: (date: Date, pageNumber: number, pageSize: number) => Promise<INote[]>
+  filterMemoryNotes: (date: Date) => INote[]
   addNote: (noteId: number) => Promise<void>,
   hasDatesNextPage: boolean,
   totalNotes: number,
@@ -18,9 +20,8 @@ const NotesContext = createContext<{
   notes: [],
   dates: [],
   async addNote(noteId) {},
-  async fetchNotes(date, pageNumber, pageSize) {
-    return []
-  },
+  filterMemoryNotes(date) { return [] },
+  async fetchNotes(date, pageNumber, pageSize) { return [] },
   hasDatesNextPage: true,
   totalNotes: 0
 });
@@ -45,10 +46,10 @@ export const NotesProvider = ({ children }: any) => {
 
   useEffect(() => {
     fetchDates()
-    loadTotalNotes();
+    fetchTotalNotes();
   }, [])
 
-  const loadTotalNotes = async () => {
+  const fetchTotalNotes = async () => {
     try {
       var response = await axiosInstance.get(`/notes/search?pageNumber=1&pageSize=0`)
       setTotalNotes(response.data.totalCount);
@@ -57,6 +58,7 @@ export const NotesProvider = ({ children }: any) => {
     }
   }
 
+  //Buscar datas que possuem anotações
   const fetchDates = async () => {
     if (!firstLoad && hasDatesNextPage)
       setPage(p => p++);
@@ -74,12 +76,8 @@ export const NotesProvider = ({ children }: any) => {
     }
   }
 
-  const fetchNotes = async (date: Date, pageNumber: number, pageSize: number): Promise<INote[]> => {
+  const fetchNotes = async (date: Date, pageNumber: number, pageSize: number) => {
     const formatedDate = DateUtils.FormatToYYYYMMDD(date);
-    
-    var memoryNotes = notes.filter(x => DateUtils.FormatToYYYYMMDD(x.createdAt) == formatedDate)
-    if (memoryNotes.length > 0)
-      return memoryNotes;
 
     try {
       const response = await axiosInstance.get(`/notes/search?pageNumber=${pageNumber}&pageSize=${pageSize}&date=${formatedDate}`)
@@ -90,19 +88,36 @@ export const NotesProvider = ({ children }: any) => {
     } catch (error: any) {
       showToast("Não foi possível obter as anotações", false)
     }
+  }
 
-    return memoryNotes;
+  const filterMemoryNotes = (date: Date) : INote[] => {
+    const formatedDate = DateUtils.FormatToYYYYMMDD(date);
+    return notes.filter(x => DateUtils.FormatToYYYYMMDD(x.createdAt) == formatedDate)
   }
 
   const addNote = async (noteId: number) => {
-    const getNoteResponse = await axiosInstance.get("/notes/"+noteId);
+    const getNoteResponse = await axiosInstance.get<IResponse<INote>>("/notes/"+noteId);
     const note = getNoteResponse.data.data;
-    setNotes(n => [note, ...n])
-    setTotalNotes(t => t++);
+    const noteDate = note.createdAt
+    const formatedDate = DateUtils.FormatToYYYYMMDD(noteDate)
+    setTotalNotes(t => t + 1);
+
+    // Procurar se alguma data em memória corresponde com a data da anotação
+    if (dates.find(d => DateUtils.FormatToYYYYMMDD(d) === formatedDate))
+    {
+      // Caso anotações NÃO tenham sido carregado em memória
+      if (filterMemoryNotes(noteDate).length === 0)
+        fetchNotes(noteDate, 1, 20); // Carregar em memória
+      else // Se já foram carregadas, então adicionar
+        setNotes(n => [note, ...n])
+    }else { // Se não possui a data, então criar
+      setDates(d => [noteDate, ...d])
+      setNotes(n => [note, ...n])
+    }
   }
 
   return (
-    <NotesContext.Provider value={{notes, addNote, dates, fetchNotes ,hasDatesNextPage, totalNotes}}>
+    <NotesContext.Provider value={{notes, addNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
       {children}
     </NotesContext.Provider>
   );

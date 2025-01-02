@@ -30,13 +30,17 @@ export default function CreateNote()
       const noteId = response.data.data.id;
 
       // Associar categorias nas notas
-      selectedCategories.map(async (x) => await addCategoryToNote(x.id, noteId));
+      await Promise.all(
+        selectedCategories.map(async (x) => await addCategoryToNote(x.id, noteId))
+      );
       await addNote(noteId);
 
+      setTitle('');
+      setSelectedCategories([]);
       showToast("Anotação criada com sucesso!", true)
       
     } catch (error: any) {
-      const titleError = error.response.data.errors.Title;
+      const titleError = error.response.data.errors?.Title;
       setTitleError(titleError)
 
       if (!titleError)
