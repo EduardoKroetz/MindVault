@@ -11,15 +11,17 @@ import IResponse from "../Interfaces/IResponse";
 const NotesContext = createContext<{
   notes: INote[];
   dates: Date[];
+  addNote: (noteId: number) => Promise<void>,
+  updateNote: (note: INote) => void,
   fetchNotes: (date: Date, pageNumber: number, pageSize: number) => Promise<INote[]>
   filterMemoryNotes: (date: Date) => INote[]
-  addNote: (noteId: number) => Promise<void>,
   hasDatesNextPage: boolean,
   totalNotes: number,
 }>({
   notes: [],
   dates: [],
   async addNote(noteId) {},
+  updateNote(note: INote) {},
   filterMemoryNotes(date) { return [] },
   async fetchNotes(date, pageNumber, pageSize) { return [] },
   hasDatesNextPage: true,
@@ -116,8 +118,19 @@ export const NotesProvider = ({ children }: any) => {
     }
   }
 
+  const updateNote = (note: INote) => {
+    const noteIndex = notes.findIndex(x => x.id === note.id);
+    if (noteIndex === -1)
+      return
+
+    const updatedNotes = [...notes];
+    updatedNotes[noteIndex] = note;
+
+    setNotes(updatedNotes);
+  }
+
   return (
-    <NotesContext.Provider value={{notes, addNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
+    <NotesContext.Provider value={{notes, addNote, updateNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
       {children}
     </NotesContext.Provider>
   );

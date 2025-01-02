@@ -8,10 +8,8 @@ import ICategory from "../Interfaces/ICategory";
 
 const CategoriesContext = createContext<{
   categories: ICategory[];
-  addCategoryToNote: (categoryId: number, noteId: number) => Promise<void>
 }>({
   categories: [],
-  async addCategoryToNote(categoryId, noteId) {}
 });
 
 export const useCategories = () => {
@@ -39,16 +37,8 @@ export const CategoriesProvider = ({ children }: any) => {
     }
   }
 
-  const addCategoryToNote = async (categoryId: number, noteId: number) => {
-    try {
-      await axiosInstance.post(`/notes/${noteId}/categories/${categoryId}`,)
-    } catch (error: any) {
-      showToast(ErrorUtils.GetErrorMessageFromResponse(error), false)
-    }
-  }
-
   return (
-    <CategoriesContext.Provider value={{categories, addCategoryToNote}}>
+    <CategoriesContext.Provider value={{categories}}>
       {children}
     </CategoriesContext.Provider>
   );

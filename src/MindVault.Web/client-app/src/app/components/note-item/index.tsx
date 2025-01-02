@@ -1,6 +1,8 @@
 import INote from "@/app/Interfaces/INote"
 import styles from "./styles.module.css"
 import { ListGroupItem } from "reactstrap"
+import Link from "next/link"
+import CategoryBadge from "../category-badge"
 
 export default function NoteItem({ note } : { note: INote })
 {
@@ -10,15 +12,13 @@ export default function NoteItem({ note } : { note: INote })
       <div>
         <div className={styles.categories}>
           {note.categories.map(x => (
-            <span key={x.id}>
-              <span className="badge" style={{backgroundColor: x.color}}>{x.name}</span>
-            </span>
+            <CategoryBadge key={x.id} category={x}></CategoryBadge>
           ))}
         </div>
         <div className="dropdown">
           <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
           <ul className="dropdown-menu">
-            <li><a className="dropdown-item" href="#">Editar</a></li>
+            <li><Link  className="dropdown-item" href={`/notes/edit/${note.id}`}>Editar</Link></li>
             <li><a className="dropdown-item" href="#">Deletar</a></li>
           </ul>
         </div>
