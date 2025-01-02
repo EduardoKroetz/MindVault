@@ -1,4 +1,5 @@
 using MindVault.Application.DTOs.Categories.GetCategory;
+using MindVault.Application.DTOs.Notes.EditorNote;
 using MindVault.Application.DTOs.Notes.GetNote;
 using MindVault.Application.DTOs.Notes.SearchNote;
 using MindVault.Core.Common.Results;
@@ -27,26 +28,29 @@ public class NoteService : INoteService
         _mapper = mapper;
     }
 
-    public async Task<int> CreateNoteAsync(string title, string content, string userId)
+    public async Task<int> CreateNoteAsync(string userId, EditorNoteDto dto)
     {
         var iv = _encryptionService.GenerateRandomIv();
-        var cipherContent = _encryptionService.Encrypt(content, iv);
+        var cipherContent = _encryptionService.Encrypt(dto.Content, iv);
         var base64Iv = Convert.ToBase64String(iv);
+        
+        var categories = await GetCategoriesByListId(dto.Categories);
         
         var note = new Note
         {
-            Title = title,
+            Title = dto.Title,
             CipherContent = cipherContent,
             UserId = userId,
             Base64IV = base64Iv,
+            Categories = categories
         };
 
-        await _noteRepository.AddAsync(note);    
-        
+        await _noteRepository.AddAsync(note);
+
         return note.Id;
     }
     
-    public async Task<Result> UpdateNoteAsync(string title, string content, int noteId, string userId)
+    public async Task<Result> UpdateNoteAsync(EditorNoteDto dto, int noteId, string userId)
     {
         var note = await _noteRepository.GetByIdAsync(noteId);
         if (note is null)
@@ -57,15 +61,30 @@ public class NoteService : INoteService
 
         // Encrypt content
         var iv = Convert.FromBase64String(note.Base64IV);
-        var cipherContent = _encryptionService.Encrypt(content, iv);
+        var cipherContent = _encryptionService.Encrypt(dto.Content, iv);
         
-        note.Title = title;
+        note.Title = dto.Title;
         note.CipherContent = cipherContent;
+        note.Categories = await GetCategoriesByListId(dto.Categories);
         
         await _noteRepository.UpdateAsync(note);    
         
         return Result.Success(noteId);
     }
+
+    private async Task<List<Category>> GetCategoriesByListId(int[] ids)
+    {
+        List<Category> categories = [];
+        foreach (var categoryId in ids)
+        {
+            var category = await _categoryRepository.GetByIdAsync(categoryId);
+            if (category != null)
+                categories.Add(category);
+        }
+
+        return categories;
+    }
+    
     
     public async Task<Result> DeleteNoteAsync(int noteId, string userId)
     {

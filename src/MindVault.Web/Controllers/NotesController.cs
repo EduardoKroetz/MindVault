@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MindVault.Application.DTOs.Notes.CreateNote;
-using MindVault.Application.DTOs.Notes.GetNote;
+using MindVault.Application.DTOs.Notes.EditorNote;
 using MindVault.Application.DTOs.Notes.SearchNote;
 using MindVault.Core.Common.Results;
 using MindVault.Application.Services.Interfaces;
@@ -28,7 +27,7 @@ public class NotesController : ControllerBase
     {
         var userId = User.GetUserId();
 
-        var noteId = await _noteService.CreateNoteAsync(dto.Title, dto.Content, userId);
+        var noteId = await _noteService.CreateNoteAsync(userId, dto);
         
         return Ok(Result.Success(new { Id = noteId }));
     }
@@ -38,7 +37,7 @@ public class NotesController : ControllerBase
     {
         var userId = User.GetUserId();
 
-        var result = await _noteService.UpdateNoteAsync(dto.Title, dto.Content, noteId, userId);
+        var result = await _noteService.UpdateNoteAsync(dto, noteId, userId);
         if (result.Succeeded is false)
             return this.HandleFailure(result);
         

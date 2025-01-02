@@ -1,4 +1,4 @@
-using MindVault.Application.DTOs.Notes.CreateNote;
+using MindVault.Application.DTOs.Notes.EditorNote;
 
 namespace MindVault.Application.DTOs.Notes.CreateNote;
 
