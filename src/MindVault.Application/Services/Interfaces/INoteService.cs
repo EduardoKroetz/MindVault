@@ -14,5 +14,5 @@ public interface INoteService
     Task<PaginatedResult<GetNoteDto>> GetNotesAsync(string userId, SearchNoteDto dto);
     Task<Result> AddNoteCategoryAsync(string userId, int noteId, int categoryId);
     Task<Result> RemoveNoteCategoryAsync(string userId, int noteId, int categoryId);
-    Task<PaginatedResult<DateTimeOffset>> GetNotesDatesAsync(string userId, int pageSize, int pageNumber);
+    Task<PaginatedResult<DateTime>> GetNotesDatesAsync(string userId, int pageSize, int pageNumber);
 }

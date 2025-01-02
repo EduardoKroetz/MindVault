@@ -4,8 +4,12 @@ public class BaseEntity
 {
     public int Id { get; set; }
 
-    public DateTimeOffset CreatedAt { get; private set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset UpdatedAt { get; private set; } = DateTimeOffset.UtcNow;
+    public DateTime CreatedAt { get; private set; } = NewDate();
+    public DateTime UpdatedAt { get; private set; } = NewDate();
 
-    public void UpdateTimestamp() => UpdatedAt = DateTimeOffset.UtcNow;
+    private static DateTime NewDate()
+    {
+        var brazilianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+        return TimeZoneInfo.ConvertTime(DateTime.UtcNow, brazilianTimeZone);
+    }
 }

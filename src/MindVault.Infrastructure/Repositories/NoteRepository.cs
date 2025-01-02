@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using MindVault.Core.Entities;
 using MindVault.Core.Repositories;
@@ -29,7 +28,7 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .AsQueryable();
         
         if (date is not null)
-            query = query.Where(note => note.CreatedAt.Date.Equals(date.Value.Date));
+            query = query.Where(note => note.CreatedAt.Date == date.Value.Date);
         
         if (references is not null)
              query = FilterNotesByReferences(query, references);
@@ -66,7 +65,7 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .Select(x => x.Note);
     }
 
-    public async Task<(IEnumerable<DateTimeOffset> Dates, int TotalCount)> GetNoteDates(string userId, int pageSize, int pageNumber)
+    public async Task<(IEnumerable<DateTime> Dates, int TotalCount)> GetNoteDates(string userId, int pageSize, int pageNumber)
     {
         var query = _context.Notes
             .Where(x => x.UserId == userId)
@@ -79,6 +78,11 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .OrderByDescending(x => x)
             .ToListAsync();
 
-        return (dates, count);
+        var datesStr = dates
+            .GroupBy(x =>  x.ToString("d"))
+            .Select(x => DateTime.Parse(x.Key))
+            .ToList();
+
+        return (datesStr, count);
     }
 }
