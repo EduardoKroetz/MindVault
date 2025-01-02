@@ -132,7 +132,20 @@ export const NotesProvider = ({ children }: any) => {
   }
 
   const removeNote = (note: INote) => {
+
     setNotes(n => n.filter(x => x.id != note.id));
+    setTotalNotes(t => t - 1);
+
+    const noteDate = note.createdAt
+    const formatedDate = DateUtils.FormatToYYYYMMDD(noteDate)
+
+    // Procurar se alguma data em memória corresponde com a data da anotação
+    if (dates.find(d => DateUtils.FormatToYYYYMMDD(d) === formatedDate))
+    { 
+      const notes = filterMemoryNotes(noteDate);
+      if (notes.length === 1)      
+        setDates(d => dates.filter(x => DateUtils.FormatToYYYYMMDD(x) != formatedDate))
+    }
   }
 
   return (

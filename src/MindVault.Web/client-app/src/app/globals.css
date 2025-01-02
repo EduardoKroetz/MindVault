@@ -31,8 +31,9 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a:hover, i:hover {
   color: rgb(113, 112, 112);
+  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {

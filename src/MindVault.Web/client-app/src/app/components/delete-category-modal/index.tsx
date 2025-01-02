@@ -1,22 +1,25 @@
 "use client"
 
 import axiosInstance from "@/app/api/axios";
-import { useNotes } from "@/app/contexts/notesContext";
+import { useCategories } from "@/app/contexts/categoriesContext";
 import useToastMessage from "@/app/hooks/useToastMessage";
-import INote from "@/app/Interfaces/INote";
+import ICategory from "@/app/Interfaces/ICategory";
 import { ErrorUtils } from "@/app/Utils/ErrorUtils";
 import { useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen: boolean, toggleModal(): void, note: INote })
+export default function DeleteCategoryModal({ isOpen, toggleModal, category } : { isOpen: boolean, toggleModal(): void, category: ICategory | null })
 {
   const [confirmation, setConfirmation] = useState("");
   const confirmationMsg = "deletar"
   const [errorConfirmation, setErrorConfirmation] = useState<string | null>(null)
-  const { removeNote } = useNotes()
+  const { removeCategory } = useCategories()
   const showToast = useToastMessage();
 
-  const handleDeleteNote = async () => {
+  if (!category)
+    return
+
+  const handleDeleteCategory = async () => {
     setErrorConfirmation(null)
     if (confirmation != confirmationMsg)
     {
@@ -26,10 +29,10 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
 
     setConfirmation('')
     try {
-      await axiosInstance.delete(`/notes/${note.id}`)
+      await axiosInstance.delete(`/categories/${category.id}`)
       toggleModal();
-      showToast("Anotação deletada com sucesso", true);
-      removeNote(note);
+      showToast("Categoria deletada com sucesso", true);
+      removeCategory(category)
     }catch (error: any)
     {
       toggleModal();
@@ -39,9 +42,9 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
 
   return (
     <Modal isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Deletar Anotação - {note.title}</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Deletar Categoria - {category.name}</ModalHeader>
       <ModalBody>
-        <p>Tem certeza que deseja deletar essa anotação?</p> 
+        <p>Tem certeza que deseja deletar essa categoria?</p> 
         <div className="alert alert-danger" role="alert">
           Essa ação é irreversível
         </div>
@@ -60,7 +63,7 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
         <Button color="secondary" onClick={toggleModal}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleDeleteNote}>
+        <Button color="primary" onClick={handleDeleteCategory}>
           Confirmar
         </Button>
       </ModalFooter>

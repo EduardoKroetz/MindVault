@@ -1,6 +1,7 @@
 import ICategory from "@/app/Interfaces/ICategory";
 import { Dispatch, SetStateAction } from "react";
 import CategoryBadge from "../category-badge";
+import ColorUtils from "@/app/Utils/ColorUtils";
 
 interface SelectCategoriesProps
 {
@@ -30,7 +31,7 @@ export default function SelectCategories({ categories, selectedCategories, setSe
         value="">
         <option value="">Selecione categorias</option>
         { categories.map(c => (
-          <option key={c.id} value={c.id}>{ c.name }</option>
+          <option style={{backgroundColor: c.color, color: ColorUtils.getTextColorForBackground(c.color)}} key={c.id} value={c.id}>{ c.name }</option>
         )) }
       </select>
       <div className="mt-1 d-flex gap-1">

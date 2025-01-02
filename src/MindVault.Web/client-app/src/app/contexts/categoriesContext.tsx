@@ -8,8 +8,14 @@ import ICategory from "../Interfaces/ICategory";
 
 const CategoriesContext = createContext<{
   categories: ICategory[];
+  addCategory: (category: ICategory) => void,
+  updateCategory: (category: ICategory) => void,
+  removeCategory: (category: ICategory) => void,
 }>({
   categories: [],
+  addCategory(category: ICategory) {},
+  updateCategory(category: ICategory) {},
+  removeCategory(category: ICategory) {},
 });
 
 export const useCategories = () => {
@@ -37,8 +43,28 @@ export const CategoriesProvider = ({ children }: any) => {
     }
   }
 
+  const addCategory = (category: ICategory) => {
+    setCategories(c => [category, ...c])
+  }
+
+  const updateCategory = (category: ICategory) => {
+    const categoryIndex = categories.findIndex(x => x.id === category.id);
+    if (categoryIndex === -1)
+      return
+
+    const updatedCategories = [...categories];
+    updatedCategories[categoryIndex] = category;
+
+    setCategories(updatedCategories);
+  }
+
+  const removeCategory = (category: ICategory) => {
+    const updatedCategories = categories.filter(c => c.id != category.id)
+    setCategories(updatedCategories);
+  }
+
   return (
-    <CategoriesContext.Provider value={{categories}}>
+    <CategoriesContext.Provider value={{categories, addCategory, updateCategory, removeCategory}}>
       {children}
     </CategoriesContext.Provider>
   );
