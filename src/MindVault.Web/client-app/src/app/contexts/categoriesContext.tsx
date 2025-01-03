@@ -5,6 +5,7 @@ import useToastMessage from "../hooks/useToastMessage";
 import axiosInstance from "../api/axios";
 import { ErrorUtils } from "../Utils/ErrorUtils";
 import ICategory from "../Interfaces/ICategory";
+import { useAccount } from "./accountContext";
 
 const CategoriesContext = createContext<{
   categories: ICategory[];
@@ -29,10 +30,16 @@ export const useCategories = () => {
 export const CategoriesProvider = ({ children }: any) => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const showToast = useToastMessage();
+  const [firstLoad, setFirstLoad] = useState(true);
+  const { account } = useAccount();
 
   useEffect(() => {
-    fetchCategories();
-  }, [])
+    if (account && firstLoad)
+    {
+      fetchCategories();
+      setFirstLoad(false);
+    }
+  }, [account])
 
   const fetchCategories = async () => {
     try {

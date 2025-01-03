@@ -7,7 +7,12 @@ import useToastMessage from "../hooks/useToastMessage";
 import axiosInstance from "../api/axios";
 import { ErrorUtils } from "../Utils/ErrorUtils";
 
-const AccountContext = createContext<IUser | undefined>(undefined);
+interface AccountContextProps {
+  account: IUser | null,
+  getUser: () => Promise<void>
+} 
+
+const AccountContext = createContext<AccountContextProps>({ account: null, getUser: async () => {} });
 
 export const useAccount = () => {
   const context = useContext(AccountContext);
@@ -20,11 +25,7 @@ export const useAccount = () => {
 export const AccountProvider = ({ children }: any) => {
   const showToast = useToastMessage();
   const router = useRouter();
-  const [account, setAccount] = useState<IUser>({ id: '', username: '', email: ''});
-
-  useEffect(() => {
-    getUser();
-  }, [])
+  const [account, setAccount] = useState<IUser | null>(null);
 
   const getUser = async () => {
     const token = localStorage.getItem('token');
@@ -45,7 +46,7 @@ export const AccountProvider = ({ children }: any) => {
   }
 
   return (
-    <AccountContext.Provider value={account}>
+    <AccountContext.Provider value={{ account, getUser }}>
       {children}
     </AccountContext.Provider>
   );

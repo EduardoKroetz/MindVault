@@ -7,6 +7,7 @@ import { ErrorUtils } from "../Utils/ErrorUtils";
 import INote from "../Interfaces/INote";
 import DateUtils from "../Utils/DateUtils";
 import IResponse from "../Interfaces/IResponse";
+import { useAccount } from "./accountContext";
 
 const NotesContext = createContext<{
   notes: INote[];
@@ -42,16 +43,23 @@ export const NotesProvider = ({ children }: any) => {
   const [notes, setNotes] = useState<INote[]>([]);
   const [dates, setDates] = useState<Date[]>([]);
   const [page, setPage] = useState(1);
-  const [firstLoad, setFirstLoad] = useState(true);
   const [hasDatesNextPage, setHasNextPage] = useState(true);
   const [totalNotes, setTotalNotes] = useState(0);
   const pageSize = 20;
   const showToast = useToastMessage();
+  const { account } = useAccount();
+  const [firstLoad, setFirstLoad] = useState(true);
+  
 
   useEffect(() => {
-    fetchDates()
-    fetchTotalNotes();
-  }, [])
+    if (account && firstLoad)
+    {
+      fetchDates()
+      fetchTotalNotes();
+      setFirstLoad(false)
+    }
+
+  }, [account])
 
   const fetchTotalNotes = async () => {
     try {
@@ -64,14 +72,8 @@ export const NotesProvider = ({ children }: any) => {
 
   //Buscar datas que possuem anotações
   const fetchDates = async () => {
-    if (!firstLoad && hasDatesNextPage)
-      setPage(p => p++);
-
     try {
       var response = await axiosInstance.get(`/notes/dates?pageNumber=${page}&pageSize=${pageSize}`)
-      if (firstLoad)
-        setFirstLoad(false);
-      
       setHasNextPage(response.data.hasNextPage);
       setDates(dates => [...dates, ...response.data.data])
       setTotalNotes(response.data.totalCount);
