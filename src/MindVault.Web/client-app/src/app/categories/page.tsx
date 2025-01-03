@@ -43,7 +43,7 @@ export default function Categories()
 
   return (
     <Layout>
-      <div className="d-flex flex-column gap-3">
+      <div className="d-flex flex-column gap-3 container-fluid">
         <div>
           <Button onClick={newCategory}>Criar Categoria</Button>
         </div>

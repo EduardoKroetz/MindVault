@@ -6,7 +6,7 @@ export default function CategoryBadge({ category, children } : { category: ICate
 {
   return (
     <span>
-      <span className="badge mx-1 d-flex align-items-center gap-1" style={{backgroundColor: category.color, color: ColorUtils.getTextColorForBackground(category.color)}}>
+      <span className="badge mx-1 d-flex align-items-center gap-1" style={{backgroundColor: category.color, color: ColorUtils.getTextColorForBackground(category.color), wordBreak: "break-all"}}>
         {category.name}
         { children }
       </span>

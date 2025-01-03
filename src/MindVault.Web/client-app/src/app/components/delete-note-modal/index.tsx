@@ -46,7 +46,7 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
           Essa ação é irreversível
         </div>
         <div className="form-floating">
-          <input type="text" id="floatingInputTitle" 
+          <input type="text" id="floatingInputTitle" autoComplete="off" 
               className={`form-control ${errorConfirmation ? 'is-invalid' : ''}`}
             onChange={(ev) => setConfirmation(ev.target.value)}
             value={confirmation}/>

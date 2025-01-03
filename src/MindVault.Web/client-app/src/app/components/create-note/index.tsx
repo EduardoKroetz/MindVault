@@ -72,7 +72,7 @@ export default function CreateNote()
                 {titleError}
               </div>
             </div>
-            <SelectCategories categories={categories} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories}/>
+            <SelectCategories selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories}/>
           </form>
         </ModalBody>
         <ModalFooter>

@@ -2,16 +2,18 @@ import ICategory from "@/app/Interfaces/ICategory";
 import { Dispatch, SetStateAction } from "react";
 import CategoryBadge from "../category-badge";
 import ColorUtils from "@/app/Utils/ColorUtils";
+import { useCategories } from "@/app/contexts/categoriesContext";
 
 interface SelectCategoriesProps
 {
-  categories: ICategory[], 
   selectedCategories: ICategory[],
   setSelectedCategories: Dispatch<SetStateAction<ICategory[]>>
 }
 
-export default function SelectCategories({ categories, selectedCategories, setSelectedCategories } : SelectCategoriesProps)
+export default function SelectCategories({ selectedCategories, setSelectedCategories } : SelectCategoriesProps)
 {
+  const { categories } = useCategories()
+
   const addCategory = (categoryId: number) => {
     const category = categories.find((c) => c.id === categoryId);
     if (category && !selectedCategories.find((x) => x.id === category.id)) {

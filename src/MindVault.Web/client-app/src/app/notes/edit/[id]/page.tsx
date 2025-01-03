@@ -92,7 +92,7 @@ export default function EditNote({ params }: { params: Promise<{ id: string }> }
           <label htmlFor="floatingInputTitle">Título</label>
         </div>
         <div>
-          <SelectCategories categories={categories} selectedCategories={selectedCategories} setSelectedCategories={setSelectCategories}></SelectCategories>
+          <SelectCategories selectedCategories={selectedCategories} setSelectedCategories={setSelectCategories}></SelectCategories>
         </div>
         <div className="form-floating d-flex flex-grow-1">
           <textarea className="form-control h-100" id="floatingTextarea"

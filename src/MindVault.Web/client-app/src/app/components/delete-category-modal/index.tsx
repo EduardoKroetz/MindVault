@@ -49,8 +49,8 @@ export default function DeleteCategoryModal({ isOpen, toggleModal, category } : 
           Essa ação é irreversível
         </div>
         <div className="form-floating">
-          <input type="text" id="floatingInputTitle" 
-              className={`form-control ${errorConfirmation ? 'is-invalid' : ''}`}
+          <input type="text" id="floatingInputTitle" autoComplete="off" 
+            className={`form-control ${errorConfirmation ? 'is-invalid' : ''}`}
             onChange={(ev) => setConfirmation(ev.target.value)}
             value={confirmation}/>
           <label htmlFor="floatingInputTitle">Confirme a ação digitando: '{confirmationMsg}'.</label>
