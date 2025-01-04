@@ -35,7 +35,7 @@ export default function Login()
       showToast("Login efetuado com sucesso!", true);
       router.push("/notes");
     } catch (error: any) {
-      var errors = error.response.data.errors;
+      var errors = error?.response?.data?.errors;
       const emailError = errors?.Email;
       const passwordError = errors?.Password
 
