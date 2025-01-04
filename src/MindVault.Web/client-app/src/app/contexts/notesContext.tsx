@@ -12,6 +12,7 @@ import { useAccount } from "./accountContext";
 const NotesContext = createContext<{
   notes: INote[];
   dates: Date[];
+  loadingDates: boolean,
   addNote: (noteId: number) => Promise<void>,
   updateNote: (note: INote) => void,
   removeNote: (note: INote) => void,
@@ -22,11 +23,12 @@ const NotesContext = createContext<{
 }>({
   notes: [],
   dates: [],
-  async addNote(noteId) {},
-  updateNote(note: INote) {},
-  removeNote(note: INote) {},
-  filterMemoryNotes(date) { return [] },
-  async fetchNotes(date, pageNumber, pageSize) { return [] },
+  loadingDates: true,
+  async addNote() {},
+  updateNote: () => {},
+  removeNote: () => {},
+  filterMemoryNotes: () => [],
+  async fetchNotes() { return [] },
   hasDatesNextPage: true,
   totalNotes: 0
 });
@@ -42,6 +44,7 @@ export const useNotes = () => {
 export const NotesProvider = ({ children }: any) => {
   const [notes, setNotes] = useState<INote[]>([]);
   const [dates, setDates] = useState<Date[]>([]);
+  const [loadingDates, setLoadingDates] = useState(true);
   const [page, setPage] = useState(1);
   const [hasDatesNextPage, setHasNextPage] = useState(true);
   const [totalNotes, setTotalNotes] = useState(0);
@@ -72,6 +75,7 @@ export const NotesProvider = ({ children }: any) => {
 
   //Buscar datas que possuem anotações
   const fetchDates = async () => {
+    setLoadingDates(true);
     try {
       var response = await axiosInstance.get(`/notes/dates?pageNumber=${page}&pageSize=${pageSize}`)
       setHasNextPage(response.data.hasNextPage);
@@ -80,6 +84,7 @@ export const NotesProvider = ({ children }: any) => {
     }catch (error: any) {
       showToast(ErrorUtils.GetErrorMessageFromResponse(error), false);
     }
+    setLoadingDates(false);
   }
 
   const fetchNotes = async (date: Date, pageNumber: number, pageSize: number) => {
@@ -151,7 +156,7 @@ export const NotesProvider = ({ children }: any) => {
   }
 
   return (
-    <NotesContext.Provider value={{notes, addNote, updateNote, removeNote, dates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
+    <NotesContext.Provider value={{notes, addNote, updateNote, removeNote, dates, loadingDates, fetchNotes, filterMemoryNotes ,hasDatesNextPage, totalNotes}}>
       {children}
     </NotesContext.Provider>
   );

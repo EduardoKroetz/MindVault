@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useCategories } from "@/app/contexts/categoriesContext";
 import ICategory from "@/app/Interfaces/ICategory";
-import { Dropdown, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem } from "reactstrap";
+import { Badge, Button, Dropdown, DropdownMenu, DropdownToggle, Input, ListGroup, ListGroupItem, UncontrolledDropdown } from "reactstrap";
 import CategoryBadge from "../category-badge";
 import DateUtils from "@/app/Utils/DateUtils";
 import axiosInstance from "@/app/api/axios";
@@ -22,7 +22,7 @@ export default function SearchNotes()
   
   const showToast = useToastMessage();
   const { categories } = useCategories();
-  const { setSearchedNotes, setFilterActive } = useSearchNotes()
+  const { setSearchedNotes, setFilterActive, setLoadingNotes } = useSearchNotes()
   const [categoryDPIsOpen, setCategoryDPIsOpen] = useState(false);
   const [dateDPIsOpen, setDateDPIsOpen] = useState(false);
 
@@ -35,6 +35,7 @@ export default function SearchNotes()
   }, [searchTerm])
 
   const fetchNotes = async () => {
+    setLoadingNotes(true);
     try {
       let formatedDate : string | null = date ? DateUtils.FormatToYYYYMMDD(date) : null;
       
@@ -49,10 +50,11 @@ export default function SearchNotes()
     }catch (error: any) {
       showToast("Não foi possível filtrar as anotações", false);
     }
+    setLoadingNotes(false)
   }
 
   useEffect(() => {
-    if (!debouncedTerm && !date && !category)
+    if (debouncedTerm.length === 0 && !date && !category)
     {
       setFilterActive(false);
       return;
@@ -92,7 +94,7 @@ export default function SearchNotes()
   }
 
   return (
-    <div>
+    <>
       <div className="d-flex gap-1 flex-grow-1">
         <div className="input-group flex-grow-1">
           <i className="input-group-text bi-filter" id="addon-wrapping" />
@@ -100,24 +102,31 @@ export default function SearchNotes()
             onChange={(ev) => setSearchTerm(ev.target.value)}
             value={searchTerm}/>
         </div>
-        <Dropdown isOpen={dateDPIsOpen} toggle={toggleDateDP}>
-          <DropdownToggle caret className="d-flex align-items-center gap-2">
+        <Dropdown toggle={toggleDateDP} isOpen={dateDPIsOpen} className="dropdown">
+          <DropdownToggle 
+            caret
+            id="dropdownDateButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             Data
           </DropdownToggle>
-          <DropdownMenu className="p-2">
+          <div className="dropdown-menu p-2" aria-labelledby="dropdownDateButton">
             <div className="d-flex gap-2">
-              <input type="date" className="form-control"
+              <Input
+                type="date"
                 onChange={(ev) => setSelectedDate(ev.target.value)}
-                value={selectedDate}/>
-              <button onClick={filterDate} type="submit" className="btn btn-primary">Filtrar</button>          
+                value={selectedDate} 
+              />
+              <Button onClick={filterDate} type="button" color="primary">Filtrar</Button>
             </div>
-          </DropdownMenu>
+          </div>
         </Dropdown>
         <Dropdown isOpen={categoryDPIsOpen} toggle={toggleCategoryDP}>
-          <DropdownToggle caret className="d-flex align-items-center gap-2">
+          <DropdownToggle data-bs-toggle="dropdown" caret aria-expanded="false">
             Categoria
           </DropdownToggle>
-          <DropdownMenu className="p-2">
+          <div className="dropdown-menu p-2">
             <ListGroup>
               {categories.map(c => (
                 <ListGroupItem 
@@ -129,22 +138,28 @@ export default function SearchNotes()
                 </ListGroupItem>
               ))}
             </ListGroup>
-          </DropdownMenu>
+          </div>
         </Dropdown>
       </div>
-      <div className="mt-2 d-flex">
+      <div className="mt-2 d-flex gap-2">
+        {debouncedTerm.length > 0 && (
+          <Badge className="d-flex align-items-center" color="info">
+            { debouncedTerm }
+            <i className="bi-x-lg d-flex ms-2" onClick={() => {setDebouncedTerm(''); setSearchTerm('')}}></i>
+          </Badge>
+        )}
         {category && (
           <CategoryBadge category={category}>
             <i className="bi-x-lg d-flex ms-2" onClick={() => setCategory(null)}></i>
           </CategoryBadge>
         )}
         {date && (
-          <span className="badge d-flex align-items-center text-bg-warning">
+          <Badge className="d-flex align-items-center" color="warning">
             { DateUtils.FormatDateOnly(date) }
             <i className="bi-x-lg d-flex ms-2" onClick={() => setDate(null)}></i>
-          </span>
+          </Badge>
         )}
       </div>
-    </div>
+    </>
   )
 }

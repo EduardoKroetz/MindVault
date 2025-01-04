@@ -5,11 +5,15 @@ import INote from "../Interfaces/INote";
 
 const SearchNotesContext = createContext<{
   searchedNotes: INote[];
+  loadingNotes: boolean,
+  setLoadingNotes: Dispatch<SetStateAction<boolean>>,
   setSearchedNotes: Dispatch<SetStateAction<INote[]>>,
   filterActive: boolean,
   setFilterActive: Dispatch<SetStateAction<boolean>>
 }>({
   searchedNotes: [],
+  loadingNotes: false,
+  setLoadingNotes: () => {},
   setSearchedNotes: () => {},
   filterActive: false,
   setFilterActive: () => {}
@@ -26,9 +30,10 @@ export const useSearchNotes = () => {
 export const SearchNotesProvider = ({ children }: any) => {
   const [searchedNotes, setSearchedNotes] = useState<INote[]>([]);
   const [filterActive, setFilterActive] = useState(false);
+  const [loadingNotes, setLoadingNotes] = useState(false);
 
   return (
-    <SearchNotesContext.Provider value={{searchedNotes, setSearchedNotes, filterActive, setFilterActive}}>
+    <SearchNotesContext.Provider value={{searchedNotes, loadingNotes, setLoadingNotes, setSearchedNotes, filterActive, setFilterActive}}>
       {children}
     </SearchNotesContext.Provider>
   );

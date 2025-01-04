@@ -7,13 +7,13 @@ import useToastMessage from "@/app/hooks/useToastMessage";
 import ICategory from "@/app/Interfaces/ICategory";
 import { ErrorUtils } from "@/app/Utils/ErrorUtils";
 import { useState } from "react"
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, Form, Input, FormFeedback, FormGroup } from 'reactstrap';
 import SelectCategories from "../select-categories";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "../loading-spinner";
 
 export default function CreateNote()
 {
-  const { categories } = useCategories();
   const { addNote } = useNotes();
   const showToast = useToastMessage();
 
@@ -21,6 +21,7 @@ export default function CreateNote()
   const [title, setTitle] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<ICategory[]>([])
   const [titleError, setTitleError] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false);
 
   const router = useRouter();
 
@@ -29,6 +30,10 @@ export default function CreateNote()
   const handleCreateNote = async (ev: any) => {
     ev.preventDefault();
 
+    if (titleError)
+      return
+
+    setCreating(true);
     try {
       // Criar nota
       const categoriesIds = selectedCategories.map(x => x.id);
@@ -49,35 +54,37 @@ export default function CreateNote()
       if (!titleError)
         showToast(ErrorUtils.GetErrorMessageFromResponse(error), false)
     }
+    setCreating(false);
   }
 
   return (
     <>
       <Button color="primary" onClick={toggleModal}>Criar Anotação</Button>
-
       <Modal isOpen={modalOpen} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Criar Anotação</ModalHeader>
         <ModalBody>
-          <form onSubmit={handleCreateNote} className="needs-validation">
-            <div className="form-floating mb-3">
-              <input
+          <Form onSubmit={handleCreateNote}>
+            <FormGroup floating className="mb-3">
+              <Input
                   type="text"
                   id="floatingInputTitle"
-                  className={`form-control ${titleError ? 'is-invalid' : ''}`}
+                  invalid={titleError != null}
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  autoComplete="off"
+                  onChange={(e) => {setTitle(e.target.value); setTitleError(null) }}
                 />
-              <label htmlFor="floatingInputTitle">Título</label>
-              <div className="invalid-feedback">
-                {titleError}
-              </div>
-            </div>
+              <Label htmlFor="floatingInputTitle">Título</Label>
+              <FormFeedback className="invalid-feedback">{titleError}</FormFeedback>
+            </FormGroup>
             <SelectCategories selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories}/>
-          </form>
+          </Form>
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={toggleModal}>Fechar</Button>
-          <Button color="primary" onClick={handleCreateNote}>Criar</Button>
+          <Button disabled={creating} color="primary" onClick={handleCreateNote}>
+            { creating ? "Criando" : "Criar" }
+            { creating && <LoadingSpinner /> }
+          </Button>
         </ModalFooter>
       </Modal>
     </>

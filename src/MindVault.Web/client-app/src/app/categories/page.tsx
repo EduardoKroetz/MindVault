@@ -1,6 +1,6 @@
 "use client"
 
-import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button } from "reactstrap";
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Spinner } from "reactstrap";
 import { useCategories } from "../contexts/categoriesContext";
 import Layout from "../layouts/layout/layout";
 import { useState } from "react";
@@ -10,13 +10,14 @@ import DeleteCategoryModal from "../components/delete-category-modal";
 
 export default function Categories()
 {
-  const { categories } = useCategories()
+  const { categories, loadingCategories } = useCategories()
   const [open, setOpen] = useState<string | string[]>([]);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [category, setCategory] = useState<ICategory | null>(null)
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null)
+
 
   const toggleModal = () => setCategoryModalOpen(v => !v)
 
@@ -47,6 +48,12 @@ export default function Categories()
         <div>
           <Button onClick={newCategory}>Criar Categoria</Button>
         </div>
+        { !loadingCategories && categories.length === 0 && <h4>Você não possui nenhuma categoria</h4> }
+        { loadingCategories && (
+          <Spinner className="m-auto">
+            Carregando...
+          </Spinner>
+        ) }
         <Accordion open={open} toggle={toggle}>
           { categories.map(x => (
             <AccordionItem key={x.id}>

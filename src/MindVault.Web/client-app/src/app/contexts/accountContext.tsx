@@ -26,13 +26,18 @@ export const AccountProvider = ({ children }: any) => {
   const showToast = useToastMessage();
   const router = useRouter();
   const [account, setAccount] = useState<IUser | null>(null);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const getUser = async () => {
+    if (!firstLoad)
+      return
+
     const token = localStorage.getItem('token');
     if (token){
       try {
         const response : any = await axiosInstance.get("/accounts")
         setAccount(response.data.data)
+        setFirstLoad(false)
       } catch (error: any)
       {
         var errorMsg = ErrorUtils.GetErrorMessageFromResponse(error);

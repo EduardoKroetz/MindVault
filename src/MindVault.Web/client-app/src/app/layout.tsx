@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -39,7 +40,6 @@ export default function RootLayout({
               <CategoriesProvider>
                 <SearchNotesProvider>
                   {children}
-
                 </SearchNotesProvider>
               </CategoriesProvider>
             </NotesProvider>

@@ -4,6 +4,7 @@ import Link from "next/link"
 import CategoryBadge from "../category-badge"
 import { useState } from "react"
 import DeleteNoteModal from "../delete-note-modal"
+import DateUtils from "@/app/Utils/DateUtils"
 
 export default function NoteItem({ note } : { note: INote })
 {
@@ -14,8 +15,9 @@ export default function NoteItem({ note } : { note: INote })
   return (
     <ListGroupItem className={"list-group-item d-flex"}>
       <div className="d-flex flex-grow-1 flex-wrap align-items-center">
-        <Link href={`/notes/${note.id}`} className="flex-grow-1 px-1">
-          {note.title}
+        <Link href={`/notes/edit/${note.id}`} className="flex-grow-1 px-1">
+          <span className="fw-semibold">{note.title}</span>   
+          <span className="mx-2">{DateUtils.FormatDateTime(note.createdAt)}</span>
         </Link>
         <div className="d-flex gap-2 flex-wrap">
           {note.categories.map(x => (

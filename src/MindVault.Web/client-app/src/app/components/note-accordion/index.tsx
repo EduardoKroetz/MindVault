@@ -5,7 +5,7 @@ import NoteItem from "../note-item";
 import { useEffect, useState } from "react";
 import { useNotes } from "@/app/contexts/notesContext";
 import INote from "@/app/Interfaces/INote";
-import { Accordion, AccordionBody, AccordionHeader, AccordionItem } from "reactstrap";
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Spinner } from "reactstrap";
 
 export default function NoteAccordion({ date } : { date: Date} )
 {
@@ -13,6 +13,7 @@ export default function NoteAccordion({ date } : { date: Date} )
   const [notes, setNotes] = useState<INote[]>([]) // Anotações de X data
   const [pageNumber, setPageNumber] = useState(1);
   const { fetchNotes, notes: memoryNotes, filterMemoryNotes } = useNotes();
+  const [loadingNotes, setLoadingNotes] = useState(false);
   const pageSize = 20;
 
   useEffect(() => {
@@ -23,19 +24,24 @@ export default function NoteAccordion({ date } : { date: Date} )
   }, [memoryNotes])
 
   const toggle = (id: string) => {
-    setOpen(open === id ? [] : id);
+    if (loadingNotes)
+      return
 
-    if (open)
-      handleGetNotes()
+    handleGetNotes()
+
+    setOpen(open === id ? [] : id);
   };
 
   const handleGetNotes = async () =>
   {
+    setLoadingNotes(true);
     let notes = filterMemoryNotes(date);
     if (notes.length === 0)
       notes = await fetchNotes(date, pageNumber, pageSize)
 
     setNotes(notes)
+    setLoadingNotes(false);
+
   }
 
   return (
@@ -45,11 +51,16 @@ export default function NoteAccordion({ date } : { date: Date} )
           {DateUtils.FormatDateOnly(date)}
         </AccordionHeader>
         <AccordionBody accordionId={date.toString()}>
-          <ul className="list-group">
-            {notes.map((note) => (
-              <NoteItem note={note} key={note.id} />
-            ))}
-          </ul>
+          { loadingNotes ? (
+            <Spinner className="m-auto"/>
+          ) : (
+            <ul className="list-group">
+              {notes.map((note) => (
+                <NoteItem note={note} key={note.id} />
+              ))}
+            </ul>
+          ) }
+
         </AccordionBody>
       </AccordionItem>
     </Accordion>

@@ -6,7 +6,8 @@ import useToastMessage from "@/app/hooks/useToastMessage";
 import INote from "@/app/Interfaces/INote";
 import { ErrorUtils } from "@/app/Utils/ErrorUtils";
 import { useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Alert, Button, FormFeedback, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import LoadingSpinner from "../loading-spinner";
 
 export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen: boolean, toggleModal(): void, note: INote })
 {
@@ -15,6 +16,7 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
   const [errorConfirmation, setErrorConfirmation] = useState<string | null>(null)
   const { removeNote } = useNotes()
   const showToast = useToastMessage();
+  const [deleting, setDeleting] = useState(false);
 
   const handleDeleteNote = async () => {
     setErrorConfirmation(null)
@@ -24,6 +26,7 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
       return;
     }
 
+    setDeleting(true);
     setConfirmation('')
     try {
       await axiosInstance.delete(`/notes/${note.id}`)
@@ -35,6 +38,7 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
       toggleModal();
       showToast(ErrorUtils.GetErrorMessageFromResponse(error), false)
     }
+    setDeleting(false);
   }
 
   return (
@@ -42,26 +46,21 @@ export default function DeleteNoteModal({ isOpen, toggleModal, note } : { isOpen
       <ModalHeader toggle={toggleModal}>Deletar Anotação - {note.title}</ModalHeader>
       <ModalBody>
         <p>Tem certeza que deseja deletar essa anotação?</p> 
-        <div className="alert alert-danger" role="alert">
-          Essa ação é irreversível
-        </div>
-        <div className="form-floating">
-          <input type="text" id="floatingInputTitle" autoComplete="off" 
-              className={`form-control ${errorConfirmation ? 'is-invalid' : ''}`}
+        <Alert className="alert-danger">Essa ação é irreversível</Alert>
+        <FormGroup floating>
+          <Input type="text" id="floatingInputTitle" autoComplete="off" 
+            invalid={errorConfirmation != null}
             onChange={(ev) => setConfirmation(ev.target.value)}
             value={confirmation}/>
-          <label htmlFor="floatingInputTitle">Confirme a ação digitando: '{confirmationMsg}'.</label>
-          <div className="invalid-feedback">
-            { errorConfirmation }
-          </div>
-        </div>
+          <Label htmlFor="floatingInputTitle">Confirme a ação digitando: '{confirmationMsg}'.</Label>
+          <FormFeedback className="invalid-feedback">{ errorConfirmation }</FormFeedback>
+        </FormGroup>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggleModal}>
-          Cancelar
-        </Button>
-        <Button color="primary" onClick={handleDeleteNote}>
-          Confirmar
+        <Button color="secondary" onClick={toggleModal}> Cancelar</Button>
+        <Button disabled={deleting} color="primary" onClick={handleDeleteNote}>
+          {deleting ? 'Deletando' : 'Deletar'}
+          {deleting && <LoadingSpinner/> }
         </Button>
       </ModalFooter>
     </Modal>

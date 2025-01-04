@@ -9,14 +9,16 @@ import { useAccount } from "./accountContext";
 
 const CategoriesContext = createContext<{
   categories: ICategory[];
+  loadingCategories: boolean,
   addCategory: (category: ICategory) => void,
   updateCategory: (category: ICategory) => void,
   removeCategory: (category: ICategory) => void,
 }>({
   categories: [],
-  addCategory(category: ICategory) {},
-  updateCategory(category: ICategory) {},
-  removeCategory(category: ICategory) {},
+  loadingCategories: true,
+  addCategory: () => {},
+  updateCategory:() => {},
+  removeCategory:() => {},
 });
 
 export const useCategories = () => {
@@ -32,6 +34,7 @@ export const CategoriesProvider = ({ children }: any) => {
   const showToast = useToastMessage();
   const [firstLoad, setFirstLoad] = useState(true);
   const { account } = useAccount();
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     if (account && firstLoad)
@@ -42,12 +45,14 @@ export const CategoriesProvider = ({ children }: any) => {
   }, [account])
 
   const fetchCategories = async () => {
+    setLoadingCategories(true);
     try {
       const response = await axiosInstance.get(`/categories?pageNumber=1&pageSize=10000`)
       setCategories(response.data.data);
     }catch (error: any) {
       showToast(ErrorUtils.GetErrorMessageFromResponse(error), false);
     }
+    setLoadingCategories(false);
   }
 
   const addCategory = (category: ICategory) => {
@@ -71,7 +76,7 @@ export const CategoriesProvider = ({ children }: any) => {
   }
 
   return (
-    <CategoriesContext.Provider value={{categories, addCategory, updateCategory, removeCategory}}>
+    <CategoriesContext.Provider value={{categories, loadingCategories, addCategory, updateCategory, removeCategory}}>
       {children}
     </CategoriesContext.Provider>
   );

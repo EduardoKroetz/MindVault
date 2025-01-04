@@ -6,7 +6,8 @@ import useToastMessage from "@/app/hooks/useToastMessage";
 import ICategory from "@/app/Interfaces/ICategory";
 import { ErrorUtils } from "@/app/Utils/ErrorUtils";
 import { useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Alert, Button, FormFeedback, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import LoadingSpinner from "../loading-spinner";
 
 export default function DeleteCategoryModal({ isOpen, toggleModal, category } : { isOpen: boolean, toggleModal(): void, category: ICategory | null })
 {
@@ -15,6 +16,7 @@ export default function DeleteCategoryModal({ isOpen, toggleModal, category } : 
   const [errorConfirmation, setErrorConfirmation] = useState<string | null>(null)
   const { removeCategory } = useCategories()
   const showToast = useToastMessage();
+  const [deleting, setDeleting] = useState(false);
 
   if (!category)
     return
@@ -28,6 +30,7 @@ export default function DeleteCategoryModal({ isOpen, toggleModal, category } : 
     }
 
     setConfirmation('')
+    setDeleting(true);
     try {
       await axiosInstance.delete(`/categories/${category.id}`)
       toggleModal();
@@ -37,7 +40,8 @@ export default function DeleteCategoryModal({ isOpen, toggleModal, category } : 
     {
       toggleModal();
       showToast(ErrorUtils.GetErrorMessageFromResponse(error), false)
-    }
+    } 
+    setDeleting(false);
   }
 
   return (
@@ -45,26 +49,21 @@ export default function DeleteCategoryModal({ isOpen, toggleModal, category } : 
       <ModalHeader toggle={toggleModal}>Deletar Categoria - {category.name}</ModalHeader>
       <ModalBody>
         <p>Tem certeza que deseja deletar essa categoria?</p> 
-        <div className="alert alert-danger" role="alert">
-          Essa ação é irreversível
-        </div>
-        <div className="form-floating">
-          <input type="text" id="floatingInputTitle" autoComplete="off" 
-            className={`form-control ${errorConfirmation ? 'is-invalid' : ''}`}
+        <Alert className="alert-danger">Essa ação é irreversível </Alert>
+        <FormGroup className="form-floating">
+          <Input type="text" id="floatingInputTitle" autoComplete="off" 
+            invalid={errorConfirmation != null}
             onChange={(ev) => setConfirmation(ev.target.value)}
             value={confirmation}/>
-          <label htmlFor="floatingInputTitle">Confirme a ação digitando: '{confirmationMsg}'.</label>
-          <div className="invalid-feedback">
-            { errorConfirmation }
-          </div>
-        </div>
+          <Label htmlFor="floatingInputTitle">Confirme a ação digitando: '{confirmationMsg}'.</Label>
+          <FormFeedback className="invalid-feedback">{ errorConfirmation }</FormFeedback>
+        </FormGroup>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggleModal}>
-          Cancelar
-        </Button>
+        <Button color="secondary" onClick={toggleModal}>Cancelar</Button>
         <Button color="primary" onClick={handleDeleteCategory}>
-          Confirmar
+          {deleting ? 'Deletando' : 'Deletar' }
+          {deleting && <LoadingSpinner />}
         </Button>
       </ModalFooter>
     </Modal>

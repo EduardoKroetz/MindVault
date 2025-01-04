@@ -10,5 +10,5 @@ export default function Home() {
     router.push("/notes")
   }, [router])
 
-  return null;
+  return <></>;
 }
