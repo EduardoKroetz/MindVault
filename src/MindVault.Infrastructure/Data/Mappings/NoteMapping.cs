@@ -19,10 +19,10 @@ public class NoteMapping : IEntityTypeConfiguration<Note>
             .HasMaxLength(200);
         
         builder.Property(x => x.CipherContent)
-            .HasColumnType("nvarchar(max)");
+            .HasColumnType("text");
         
         builder.Property(x => x.Base64IV)
-            .HasColumnType("nvarchar(150)");
+            .HasColumnType("character varying(150)");
 
         builder.HasOne<ApplicationUser>()
             .WithMany(x => x.Notes)

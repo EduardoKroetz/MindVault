@@ -19,7 +19,7 @@ public static class DependencyInjection
             ?? throw new NullReferenceException("Connection string 'DefaultConnection' not found");
         
         builder.Services.AddDbContext<MindVaultDbContext>(x =>
-            x.UseSqlServer(connectionString));
+            x.UseNpgsql(connectionString));
         
         //Config Identity
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
@@ -31,8 +31,15 @@ public static class DependencyInjection
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
             })
             .AddEntityFrameworkStores<MindVaultDbContext>();
+
+        using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<MindVaultDbContext>();
+            dbContext.Database.Migrate();
+        }
 
         builder.Services.AddScoped<IIdentityService, IdentityService>();
 
