@@ -28,7 +28,7 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .AsQueryable();
         
         if (date is not null)
-            query = query.Where(note => note.CreatedAt.Date == date.Value.Date);
+            query = query.Where(note => note.CreatedAt.Date == date.Value.Date.ToUniversalTime());
         
         if (references is not null)
              query = FilterNotesByReferences(query, references);
