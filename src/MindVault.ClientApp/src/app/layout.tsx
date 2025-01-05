@@ -33,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
+      <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ToastProvider>
           <AccountProvider>
