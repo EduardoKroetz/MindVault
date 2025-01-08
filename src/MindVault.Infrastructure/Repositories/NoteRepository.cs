@@ -26,9 +26,9 @@ public class NoteRepository : BaseRepository<Note>, INoteRepository
             .Include(x => x.Categories)
             .OrderByDescending(x => x.CreatedAt)
             .AsQueryable();
-        
+
         if (date is not null)
-            query = query.Where(note => note.CreatedAt.Date == date.Value.Date.ToUniversalTime());
+            query = query.Where(note => note.CreatedAt.Date == date.Value.ToUniversalTime().Date);
         
         if (references is not null)
              query = FilterNotesByReferences(query, references);

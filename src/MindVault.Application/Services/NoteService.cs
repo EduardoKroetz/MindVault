@@ -120,7 +120,7 @@ public class NoteService : INoteService
     {
         var references = dto.Reference is null 
             ? null 
-            : dto.Reference.ToLower().Split(' ').Where(x => x.Length > 1 && !_blockedWords.Contains(x)).ToArray();
+            : dto.Reference.ToLower().Split(' ').Where(x => !_blockedWords.Contains(x)).ToArray();
         
         var data = await _noteRepository.GetNotesAsync(userId, dto.PageSize, dto.PageNumber, references, dto.Date, dto.CategoryId);
         

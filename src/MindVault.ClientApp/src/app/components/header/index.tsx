@@ -5,13 +5,11 @@ import styles from "./styles.module.css"
 import { Button, FormGroup, Input, Label, Nav, Offcanvas, OffcanvasBody, OffcanvasHeader } from "reactstrap"
 import { useEffect, useState } from "react"
 import { useAccount } from "@/app/contexts/accountContext"
-import { useRouter } from "next/navigation"
 
 export default function Header()
 {
   const [userIsOpen, setUserIsOpen] = useState(false);
   const { account, getUser } = useAccount()
-  const router = useRouter()
 
   useEffect(() => {
     getUser()
@@ -21,7 +19,7 @@ export default function Header()
 
   const handleLeaveAccount = () => {
     localStorage.removeItem('token');
-    router.push("/login")
+    window.location.href = "/login"
   }
 
   return (

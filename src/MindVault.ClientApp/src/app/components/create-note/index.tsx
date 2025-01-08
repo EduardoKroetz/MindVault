@@ -38,15 +38,13 @@ export default function CreateNote()
       // Criar nota
       const categoriesIds = selectedCategories.map(x => x.id);
       const response = await axiosInstance.post('/notes', { title, content: "", categories: categoriesIds })
-      setModalOpen(false);
       const noteId = response.data.data.id;
-      await addNote(noteId);
-
       setTitle('');
       setSelectedCategories([]);
       showToast("Anotação criada com sucesso!", true)
       router.push(`/notes/edit/${noteId}`)
-      
+      setModalOpen(false);
+      addNote(noteId);
     } catch (error: any) {
       const titleError = error.response.data.errors?.Title;
       setTitleError(titleError)

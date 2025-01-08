@@ -58,20 +58,11 @@ export const NotesProvider = ({ children }: any) => {
     if (account && firstLoad)
     {
       fetchDates()
-      fetchTotalNotes();
+      fetchNotes(null!, 1, 20);
       setFirstLoad(false)
     }
 
   }, [account])
-
-  const fetchTotalNotes = async () => {
-    try {
-      var response = await axiosInstance.get(`/notes/search?pageNumber=1&pageSize=0`)
-      setTotalNotes(response.data.totalCount);
-    }catch (error: any) {
-      showToast(ErrorUtils.GetErrorMessageFromResponse(error), false);
-    }
-  }
 
   //Buscar datas que possuem anotações
   const fetchDates = async () => {

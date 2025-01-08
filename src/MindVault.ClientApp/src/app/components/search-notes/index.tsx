@@ -127,6 +127,7 @@ export default function SearchNotes()
             Categoria
           </DropdownToggle>
           <div className="dropdown-menu p-2">
+            {categories.length === 0 && "Nenhuma categoria encontrada"}
             <ListGroup>
               {categories.map(c => (
                 <ListGroupItem 
